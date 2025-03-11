@@ -5,5 +5,17 @@
   "singleQuote": false,
   "bracketSpacing": true,
   "endOfLine": "auto",
-  "plugins": ["prettier-plugin-tailwindcss"]
+  "plugins": ["prettier-plugin-tailwindcss"],
+  "importOrder": [
+    "^@customTypes/(.*)$",
+    "^@root/(.*)$",
+    "^@src/(.*)$",
+    "^@assets/(.*)$",
+    "^@constants/(.*)$",
+    "^@utils/(.*)$",
+    "^@atoms/(.*)$",
+    "^[./]"
+  ],
+  "importOrderSeparation": true,
+  "importOrderSortSpecifiers": true
 }
