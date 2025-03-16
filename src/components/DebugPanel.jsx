@@ -40,7 +40,6 @@ function DebugPanel() {
       <div
         ref={containerRef}
         className="flex-1 space-y-4 overflow-y-auto"
-        style={{ maxHeight: "70vh" }}
       >
         {history.length > 0 ? (
           history.map((entry, index) => (
