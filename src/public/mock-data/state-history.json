@@ -1,0 +1,142 @@
+[
+  {
+    "rootComponent": "no root",
+    "changedComponents": [
+      {
+        "name": "App",
+        "stateHistory": [
+          {
+            "timestamp": "2025-03-15T12:00:00Z",
+            "state": {
+              "counter": 1,
+              "isLoggedIn": false,
+              "theme": "light",
+              "userRole": "guest",
+              "notifications": 2
+            }
+          },
+          {
+            "timestamp": "2025-03-15T12:02:00Z",
+            "state": {
+              "counter": 2,
+              "isLoggedIn": false,
+              "theme": "light",
+              "userRole": "guest",
+              "notifications": 3
+            }
+          },
+          {
+            "timestamp": "2025-03-15T12:05:00Z",
+            "state": {
+              "counter": 3,
+              "isLoggedIn": false,
+              "theme": "light",
+              "userRole": "guest",
+              "notifications": 4
+            }
+          },
+          {
+            "timestamp": "2025-03-15T12:07:00Z",
+            "state": {
+              "counter": 3,
+              "isLoggedIn": true,
+              "theme": "dark",
+              "userRole": "guest",
+              "notifications": 5
+            }
+          },
+          {
+            "timestamp": "2025-03-15T12:10:00Z",
+            "state": {
+              "counter": 4,
+              "isLoggedIn": true,
+              "theme": "dark",
+              "userRole": "admin",
+              "notifications": 5
+            }
+          },
+          {
+            "timestamp": "2025-03-15T12:12:00Z",
+            "state": {
+              "counter": 5,
+              "isLoggedIn": true,
+              "theme": "dark",
+              "userRole": "admin",
+              "notifications": 6
+            }
+          },
+          {
+            "timestamp": "2025-03-15T12:15:00Z",
+            "state": {
+              "counter": 6,
+              "isLoggedIn": true,
+              "theme": "dark",
+              "userRole": "admin",
+              "notifications": 7
+            }
+          },
+          {
+            "timestamp": "2025-03-15T12:18:00Z",
+            "state": {
+              "counter": 7,
+              "isLoggedIn": true,
+              "theme": "dark",
+              "userRole": "admin",
+              "notifications": 8
+            }
+          },
+          {
+            "timestamp": "2025-03-15T12:20:00Z",
+            "state": {
+              "counter": 8,
+              "isLoggedIn": true,
+              "theme": "dark",
+              "userRole": "admin",
+              "notifications": 9
+            }
+          },
+          {
+            "timestamp": "2025-03-15T12:22:00Z",
+            "state": {
+              "counter": 9,
+              "isLoggedIn": true,
+              "theme": "dark",
+              "userRole": "admin",
+              "notifications": 10
+            }
+          },
+          {
+            "timestamp": "2025-03-15T12:25:00Z",
+            "state": {
+              "counter": 10,
+              "isLoggedIn": true,
+              "theme": "light",
+              "userRole": "admin",
+              "notifications": 12
+            }
+          },
+          {
+            "timestamp": "2025-03-15T12:30:00Z",
+            "state": {
+              "counter": 11,
+              "isLoggedIn": true,
+              "theme": "light",
+              "userRole": "superadmin",
+              "notifications": 15
+            }
+          },
+          {
+            "timestamp": "2025-03-15T12:35:00Z",
+            "state": {
+              "counter": 12,
+              "isLoggedIn": true,
+              "theme": "light",
+              "userRole": "superadmin",
+              "notifications": 20
+            }
+          }
+        ]
+      }
+    ]
+  }
+]
