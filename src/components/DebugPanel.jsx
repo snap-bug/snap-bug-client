@@ -19,7 +19,6 @@ function DebugPanel() {
 
     const activeBox = timeTravelRefs.current[currentIndex];
     activeBox.scrollIntoView({ behavior: "smooth", block: "center" });
-
   }, [currentIndex]);
 
   const handlePrevious = () => {
@@ -38,7 +37,11 @@ function DebugPanel() {
     <div className="h-full flex flex-col shadow-lg p-4">
       <h1 className="text-lg font-bold mb-4 text-gray-900">Snap Bug</h1>
 
-      <div ref={containerRef} className="flex-1 space-y-4 overflow-y-auto" style={{ maxHeight: "70vh" }}>
+      <div
+        ref={containerRef}
+        className="flex-1 space-y-4 overflow-y-auto"
+        style={{ maxHeight: "70vh" }}
+      >
         {history.length > 0 ? (
           history.map((entry, index) => (
             <TimeTravelBox
@@ -59,7 +62,10 @@ function DebugPanel() {
         <Button onClick={handlePrevious} disabled={currentIndex === 0}>
           ← Previous
         </Button>
-        <Button onClick={handleNext} disabled={currentIndex >= history.length - 1}>
+        <Button
+          onClick={handleNext}
+          disabled={currentIndex >= history.length - 1}
+        >
           Next →
         </Button>
       </div>
