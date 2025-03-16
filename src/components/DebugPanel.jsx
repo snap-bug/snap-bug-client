@@ -58,12 +58,12 @@ function DebugPanel() {
       </div>
 
       <div className="flex justify-between mt-auto pb-4">
-        <Button onClick={handlePrevious} disabled={currentIndex === 0}>
+        <Button onClick={handlePrevious} disabled={currentIndex === 0 || history.length === 0}>
           ← Previous
         </Button>
         <Button
           onClick={handleNext}
-          disabled={currentIndex >= history.length - 1}
+          disabled={currentIndex >= history.length - 1 || history.length === 0}
         >
           Next →
         </Button>
