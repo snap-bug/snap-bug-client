@@ -8,7 +8,7 @@ function DebugPanel() {
   const initialHistory = firstComponent ? firstComponent.stateHistory : [];
   const componentName = firstComponent?.name || "Unknown Component";
 
-  const [history] = useState(initialHistory);
+  const history = initialHistory;
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const timeTravelRefs = useRef([]);
