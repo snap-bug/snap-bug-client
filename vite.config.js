@@ -23,4 +23,15 @@ const findEntryFile = (directory) => {
 
 export default defineConfig({
   plugins: [react()],
+  build: {
+    rollupOptions: {
+      input: {
+        main: findEntryFile("src"),
+      },
+    },
+    outDir: "dist",
+  },
+  server: {
+    port: 3000,
+  },
 });
