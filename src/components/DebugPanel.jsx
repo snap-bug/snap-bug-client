@@ -1,18 +1,37 @@
 import { useState, useRef, useEffect } from "react";
 import Button from "../shared/components/Button";
 import TimeTravelBox from "./TimeTravelBox";
-import historyData from "../public/mock-data/state-history.json";
 
 function DebugPanel() {
-  const firstComponent = historyData[0]?.changedComponents[0];
+  const [stateHistory, setStateHistory] = useState([]);
+  const firstComponent = stateHistory[0]?.changedComponents[0];
   const initialHistory = firstComponent ? firstComponent.stateHistory : [];
   const componentName = firstComponent?.name || "Unknown Component";
-
   const history = initialHistory;
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const timeTravelRefs = useRef([]);
   const containerRef = useRef(null);
+
+  useEffect(() => {
+    const fetchStateHistory = async () => {
+      try {
+        const response = await fetch("/snapbug-state.json");
+
+        if (!response.ok) {
+          throw new Error("상태 히스토리를 불러오는데 실패했습니다.");
+        }
+
+        const historyData = await response.json();
+
+        setStateHistory(historyData);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    fetchStateHistory();
+  }, []);
 
   useEffect(() => {
     if (!timeTravelRefs.current[currentIndex] || !containerRef.current) return;
