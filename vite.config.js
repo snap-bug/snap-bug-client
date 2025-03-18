@@ -30,7 +30,9 @@ const findEntryFile = async (directory) => {
     }
   }
 
-  throw new Error("src 폴더에 Main.jsx 또는 main.jsx가 있는지 확인해주세요.");
+  throw new Error(
+    "src 폴더에 엔트리 파일이 없습니다. 엔트리 파일명: Main, main, App, index 확장자: jsx, js, tsx",
+  );
 };
 
 export default defineConfig({
