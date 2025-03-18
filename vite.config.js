@@ -8,7 +8,19 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const findEntryFile = async (directory) => {
-  const possibleFiles = ["Main.jsx", "main.jsx", "index.jsx", "App.jsx"];
+  const possibleFiles = [
+    "Main.jsx",
+    "main.jsx",
+    "Main.tsx",
+    "main.tsx",
+    "index.jsx",
+    "App.jsx",
+    "index.tsx",
+    "App.tsx",
+    "main.js",
+    "index.js",
+    "App.js",
+  ];
 
   for (const file of possibleFiles) {
     const filePath = resolve(__dirname, directory, file);
