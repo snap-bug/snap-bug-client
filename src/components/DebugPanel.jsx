@@ -3,7 +3,7 @@ import Button from "../shared/components/Button";
 import TimeTravelBox from "./TimeTravelBox";
 
 function DebugPanel() {
-const [stateHistory, setStateHistory] = useState([]);
+  const [stateHistory, setStateHistory] = useState([]);
   const firstComponent = stateHistory[0]?.changedComponents[0];
   const initialHistory = firstComponent ? firstComponent.stateHistory : [];
   const componentName = firstComponent?.name || "Unknown Component";
