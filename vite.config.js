@@ -2,18 +2,18 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { dirname, resolve } from "path";
 import { fileURLToPath } from "url";
-import fs from "fs";
+import fs from "fs/promises";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-const findEntryFile = (directory) => {
+const findEntryFile = async (directory) => {
   const possibleFiles = ["Main.jsx", "main.jsx", "index.jsx", "App.jsx"];
 
   for (const file of possibleFiles) {
     const filePath = resolve(__dirname, directory, file);
 
-    if (fs.existsSync(filePath)) {
+    if (await fs.access(filePath)) {
       return filePath;
     }
   }
