@@ -2,15 +2,19 @@ import PropTypes from "prop-types";
 import { forwardRef } from "react";
 import { formatToISO } from "../utils/dateUtils";
 
-function TimeTravelBox({ componentName, timestamp, state, isActive }, ref) {
+function TimeTravelBox(
+  { componentName, timestamp, state, isActive, onClick },
+  ref,
+) {
   const formattedState = JSON.stringify(state, null, 2);
   const formattedTime = formatToISO(timestamp);
 
   return (
     <div
       ref={ref}
+      onClick={onClick}
       tabIndex={isActive ? 0 : -1}
-      className={`w-full rounded-lg p-4 shadow-md transition-all duration-300 ${
+      className={`cursor-pointer w-full rounded-lg p-4 shadow-md transition-all duration-300 ${
         isActive ? "bg-yellow-400" : "bg-yellow-200"
       }`}
     >
@@ -28,6 +32,7 @@ TimeTravelBox.propTypes = {
   timestamp: PropTypes.string.isRequired,
   state: PropTypes.object.isRequired,
   isActive: PropTypes.bool,
+  onClick: PropTypes.func,
 };
 
 TimeTravelBox.defaultProps = {
