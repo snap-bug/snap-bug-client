@@ -59,7 +59,7 @@ function DebugPanel() {
   };
 
   const handleNext = () => {
-    if (currentIndex < history.length - 1) {
+    if (currentIndex < stateHistory.length - 1) {
       setCurrentIndex((prevIndex) => prevIndex + 1);
     }
   };
