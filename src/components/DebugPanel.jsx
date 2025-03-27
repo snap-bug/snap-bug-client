@@ -84,6 +84,7 @@ function DebugPanel() {
               timestamp={entry.timestamp}
               state={entry.state}
               isActive={index === currentIndex}
+              onClick={() => setCurrentIndex(index)}
               ref={(el) => (timeTravelRefs.current[index] = el)}
             />
           ))
