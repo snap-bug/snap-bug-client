@@ -34,11 +34,27 @@ function DebugPanel() {
   }, []);
 
   useEffect(() => {
-    if (!timeTravelRefs.current[currentIndex] || !containerRef.current) return;
-
     const activeBox = timeTravelRefs.current[currentIndex];
+    if (activeBox && containerRef.current) {
     activeBox.scrollIntoView({ behavior: "smooth", block: "center" });
-  }, [currentIndex]);
+    }
+
+    const currentSnapshot = stateHistory[currentIndex];
+    if (!currentSnapshot) return;
+
+    const { dom, styles } = currentSnapshot;
+
+    const previewContainer = document.getElementById("preview-container");
+    const styleContainer = document.getElementById("style-container");
+
+    if (previewContainer) {
+      previewContainer.innerHTML = dom || "<div class='text-red-500'>DOM 없음</div>";
+    }
+
+    if (styleContainer) {
+      styleContainer.innerHTML = styles || "";
+    }
+  }, [currentIndex, stateHistory]);
 
   const handlePrevious = () => {
     if (currentIndex > 0) {
