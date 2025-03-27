@@ -1,10 +1,9 @@
 {
-  "name": "snap-bug-client",
-  "private": true,
-  "version": "0.0.0",
+  "name": "snapbug-client-ui",
+  "version": "0.0.6",
   "type": "module",
   "engines": {
-    "node": "22.11.0"
+    "node": ">=18.0.0"
   },
   "scripts": {
     "dev": "vite",
