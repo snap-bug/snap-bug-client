@@ -4,11 +4,6 @@ import TimeTravelBox from "./TimeTravelBox";
 
 function DebugPanel() {
   const [stateHistory, setStateHistory] = useState([]);
-  const firstComponent = stateHistory[0]?.changedComponents[0];
-  const initialHistory = firstComponent ? firstComponent.stateHistory : [];
-  const componentName = firstComponent?.name || "Unknown Component";
-  const history = initialHistory;
-
   const [currentIndex, setCurrentIndex] = useState(0);
   const timeTravelRefs = useRef([]);
   const containerRef = useRef(null);
@@ -36,7 +31,7 @@ function DebugPanel() {
   useEffect(() => {
     const activeBox = timeTravelRefs.current[currentIndex];
     if (activeBox && containerRef.current) {
-    activeBox.scrollIntoView({ behavior: "smooth", block: "center" });
+      activeBox.scrollIntoView({ behavior: "smooth", block: "center" });
     }
 
     const currentSnapshot = stateHistory[currentIndex];
@@ -48,7 +43,8 @@ function DebugPanel() {
     const styleContainer = document.getElementById("style-container");
 
     if (previewContainer) {
-      previewContainer.innerHTML = dom || "<div class='text-red-500'>DOM 없음</div>";
+      previewContainer.innerHTML =
+        dom || "<div class='text-red-500'>DOM 없음</div>";
     }
 
     if (styleContainer) {
@@ -72,17 +68,14 @@ function DebugPanel() {
     <div className="h-full flex flex-col shadow-lg p-4">
       <h1 className="text-lg font-bold mb-4 text-gray-900">Snap Bug</h1>
 
-      <div
-        ref={containerRef}
-        className="flex-1 space-y-4 overflow-y-auto"
-      >
-        {history.length > 0 ? (
-          history.map((entry, index) => (
+      <div ref={containerRef} className="flex-1 space-y-4 overflow-y-auto">
+        {stateHistory.length > 0 ? (
+          stateHistory.map((snapshot, index) => (
             <TimeTravelBox
-              key={index}
-              componentName={componentName}
-              timestamp={entry.timestamp}
-              state={entry.state}
+              key={snapshot.id || index}
+              componentName="App"
+              timestamp={snapshot.timestamp}
+              state={snapshot.state}
               isActive={index === currentIndex}
               onClick={() => setCurrentIndex(index)}
               ref={(el) => (timeTravelRefs.current[index] = el)}
@@ -94,12 +87,17 @@ function DebugPanel() {
       </div>
 
       <div className="flex justify-between mt-auto pb-4">
-        <Button onClick={handlePrevious} disabled={currentIndex === 0 || history.length === 0}>
+        <Button
+          onClick={handlePrevious}
+          disabled={currentIndex === 0 || stateHistory.length === 0}
+        >
           ← Previous
         </Button>
         <Button
           onClick={handleNext}
-          disabled={currentIndex >= history.length - 1 || history.length === 0}
+          disabled={
+            currentIndex >= stateHistory.length - 1 || stateHistory.length === 0
+          }
         >
           Next →
         </Button>
