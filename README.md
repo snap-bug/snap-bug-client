@@ -97,7 +97,8 @@ React에서는 각 컴포넌트를 FiberNode라는 구조로 관리합니다. �
 
 ### 1.2 React 앱의 루트 노드는 어떻게 찾을까?
 
-<img src="https://i.ibb.co/JPW42yp/image-1.png" alt="image-1" border="0" />
+<img src="https://i.ibb.co/PGSTsVMP/image-1.png" alt="image-1" border="0">
+<img src="https://i.ibb.co/84xDzmz1/image.png" alt="image" border="0">
 
 React 앱이 실제로 렌더링되면 React는 내부적으로 DOM 요소에 `__reactFiber$`또는 `__reactContainer$`라는 이름의 속성을 붙입니다. 이 키를 활용해 React가 관리하는 컴포넌트를 찾을 수 있었습니다.
 <br>
@@ -131,7 +132,7 @@ const getFiberRoot = () => {
 React에서 진짜 상태 변화는 `memoizedState`에서만 발생하기 때문입니다. <br>
 React 컴포넌트는 두 가지 데이터를 가지고 있는데 하나는 컴포넌트 내부에서 생성한 상태이고, 다른 하나는 부모에게서 전달받은 데이터(Props) 입니다. <br>
 
-<a href="https://ibb.co/rGQpBkYm"><img src="https://i.ibb.co/pv1KH2cx/image-2.png" alt="image-2" border="0"></a>
+<img src="https://i.ibb.co/XZyMz6d8/image-2.png" alt="image-2" border="0">
 
 이 둘은 각각 다음과 같은 곳에 저장됩니다.
 
