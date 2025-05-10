@@ -9,8 +9,8 @@ SNAPBUG는 React 애플리키에션의 상태 흐름을 자동 추적하고 DOM�
 - [🔥 Motivation](#%F0%9F%94%A5-motivation)
 - [💻 Development](#%F0%9F%92%BB-development)
   - [1. React에서 상태는 어떻게 추적할 수 있을까?](#1-react%EC%97%90%EC%84%9C-%EC%83%81%ED%83%9C%EB%8A%94-%EC%96%B4%EB%96%BB%EA%B2%8C-%EC%B6%94%EC%A0%81%ED%95%A0-%EC%88%98-%EC%9E%88%EC%9D%84%EA%B9%8C)
-    - [1.1 React 앱의 루트 노드는 어떻게 찾을까?](#11-react-%EC%95%B1%EC%9D%98-%EB%A3%A8%ED%8A%B8-%EB%85%B8%EB%93%9C%EB%8A%94-%EC%96%B4%EB%96%BB%EA%B2%8C-%EC%B0%BE%EC%9D%84%EA%B9%8C)
-    - [1.2 상태는 어디에 저장되어 있을까?](#12-%EC%83%81%ED%83%9C%EB%8A%94-%EC%96%B4%EB%94%94%EC%97%90-%EC%A0%80%EC%9E%A5%EB%90%98%EC%96%B4-%EC%9E%88%EC%9D%84%EA%B9%8C)
+    - [1.1 상태는 어디에 저장되어 있을까?](#11-%EC%83%81%ED%83%9C%EB%8A%94-%EC%96%B4%EB%94%94%EC%97%90-%EC%A0%80%EC%9E%A5%EB%90%98%EC%96%B4-%EC%9E%88%EC%9D%84%EA%B9%8C)
+    - [1.2 React 앱의 루트 노드는 어떻게 찾을까?](#12-react-%EC%95%B1%EC%9D%98-%EB%A3%A8%ED%8A%B8-%EB%85%B8%EB%93%9C%EB%8A%94-%EC%96%B4%EB%96%BB%EA%B2%8C-%EC%B0%BE%EC%9D%84%EA%B9%8C)
     - [1.3 memoizedState만 추적해야하는 이유는 뭘까?](#13-memoizedstate%EB%A7%8C-%EC%B6%94%EC%A0%81%ED%95%B4%EC%95%BC%ED%95%98%EB%8A%94-%EC%9D%B4%EC%9C%A0%EB%8A%94-%EB%AD%98%EA%B9%8C)
   - [2. UI 시점별 복원을 위한 DOM + CSS 스냅샷 저장](#2-ui-%EC%8B%9C%EC%A0%90%EB%B3%84-%EB%B3%B5%EC%9B%90%EC%9D%84-%EC%9C%84%ED%95%9C-dom--css-%EC%8A%A4%EB%83%85%EC%83%B7-%EC%A0%80%EC%9E%A5)
     - [2.1 실시간 DOM 변화를 감지하기 위한 MutationObserver 활용](#21-%EC%8B%A4%EC%8B%9C%EA%B0%84-dom-%EB%B3%80%ED%99%94%EB%A5%BC-%EA%B0%90%EC%A7%80%ED%95%98%EA%B8%B0-%EC%9C%84%ED%95%9C-mutationobserver-%ED%99%9C%EC%9A%A9)
@@ -35,13 +35,13 @@ SNAPBUG는 React 애플리키에션의 상태 흐름을 자동 추적하고 DOM�
   - [3. 변화가 없는데도 계속 저장된다.](#3-%EB%B3%80%ED%99%94%EA%B0%80-%EC%97%86%EB%8A%94%EB%8D%B0%EB%8F%84-%EA%B3%84%EC%86%8D-%EC%A0%80%EC%9E%A5%EB%90%9C%EB%8B%A4)
     - [문제: DOM이 변하지 않았는데도 매번 전체 DOM과 스타일이 저장됨](#%EB%AC%B8%EC%A0%9C-dom%EC%9D%B4-%EB%B3%80%ED%95%98%EC%A7%80-%EC%95%8A%EC%95%98%EB%8A%94%EB%8D%B0%EB%8F%84-%EB%A7%A4%EB%B2%88-%EC%A0%84%EC%B2%B4-dom%EA%B3%BC-%EC%8A%A4%ED%83%80%EC%9D%BC%EC%9D%B4-%EC%A0%80%EC%9E%A5%EB%90%A8)
     - [해결 : DOM의 해시값을 비교해 변화가 있는 시점에만 저장하는 구조로 전환](#%ED%95%B4%EA%B2%B0--dom%EC%9D%98-%ED%95%B4%EC%8B%9C%EA%B0%92%EC%9D%84-%EB%B9%84%EA%B5%90%ED%95%B4-%EB%B3%80%ED%99%94%EA%B0%80-%EC%9E%88%EB%8A%94-%EC%8B%9C%EC%A0%90%EC%97%90%EB%A7%8C-%EC%A0%80%EC%9E%A5%ED%95%98%EB%8A%94-%EA%B5%AC%EC%A1%B0%EB%A1%9C-%EC%A0%84%ED%99%98)
-    - [결과 : 의미 있는 변화만 기록하는 구조로 최적화](#%EA%B2%B0%EA%B3%BC--%EC%9D%98%EB%AF%B8-%EC%9E%88%EB%8A%94-%EB%B3%80%ED%99%94%EB%A7%8C-%EA%B8%B0%EB%A1%9D%ED%95%98%EB%8A%94-%EA%B5%AC%EC%A1%B0%EB%A1%9C-%EC%B5%9C%EC%A0%81%ED%99%94)
+    - [결과 : 화면에 실질적인 변화가 감지된 시점만 기록하는 구조로 최적화](#%EA%B2%B0%EA%B3%BC--%ED%99%94%EB%A9%B4%EC%97%90-%EC%8B%A4%EC%A7%88%EC%A0%81%EC%9D%B8-%EB%B3%80%ED%99%94%EA%B0%80-%EA%B0%90%EC%A7%80%EB%90%9C-%EC%8B%9C%EC%A0%90%EB%A7%8C-%EA%B8%B0%EB%A1%9D%ED%95%98%EB%8A%94-%EA%B5%AC%EC%A1%B0%EB%A1%9C-%EC%B5%9C%EC%A0%81%ED%99%94)
 - [📂 Tech stack](#%F0%9F%93%82-tech-stack)
   - [개발 환경](#%EA%B0%9C%EB%B0%9C-%ED%99%98%EA%B2%BD)
-  - [1. 배포 - Vercel](#1-%EB%B0%B0%ED%8F%AC---vercel)
-  - [2. 프론트엔드 - React + Vite](#2-%ED%94%84%EB%A1%A0%ED%8A%B8%EC%97%94%EB%93%9C---react--vite)
-  - [3. CLI - commander.js](#3--cli---commanderjs)
-  - [4. 브라우저 접근 - CDN](#4-%EB%B8%8C%EB%9D%BC%EC%9A%B0%EC%A0%80-%EC%A0%91%EA%B7%BC---cdn)
+  - [1. 프론트엔드 - React + Vite](#1-%ED%94%84%EB%A1%A0%ED%8A%B8%EC%97%94%EB%93%9C---react--vite)
+  - [2. CLI - commander.js](#2-cli---commanderjs)
+  - [3. 브라우저 접근 - CDN](#3-%EB%B8%8C%EB%9D%BC%EC%9A%B0%EC%A0%80-%EC%A0%91%EA%B7%BC---cdn)
+  - [4. 배포 - Vercel](#4-%EB%B0%B0%ED%8F%AC---vercel)
 - [💬 Retrospective](#%F0%9F%92%AC-retrospective)
   - [정도원](#%EC%A0%95%EB%8F%84%EC%9B%90)
   - [이세경](#%EC%9D%B4%EC%84%B8%EA%B2%BD)
@@ -75,7 +75,19 @@ SNAPBUG는 React 애플리키에션의 상태 흐름을 자동 추적하고 DOM�
 **React의 상태는 FiberNode라는 내부 구조에 저장됩니다.**<br>
 저희는 상태 추적을 위해 React의 Fiber 구조를 직접 탐색하는 방식을 택했습니다. 상태를 추적하기 위해서는 먼저 React 앱의 최상위 루트 노드(Fiber Root) 를 찾고 그 아래에 있는 각 컴포넌트들의 상태를 하나하나 순회하면서 기록해야 했습니다.
 
-### 1.1 React 앱의 루트 노드는 어떻게 찾을까?
+### 1.1 상태는 어디에 저장되어 있을까?
+
+React에서는 각 컴포넌트를 FiberNode라는 구조로 관리합니다. 이 구조 안에는 다양한 정보가 들어있었습니다.
+
+- `memoizedState` : 현재 컴포넌트에서 사용하는 상태
+- `memoizedProps` : 부모 컴포넌트로부터 받은 props
+- `child` : 자식 컴포넌트
+- `sibling` : 형제 컴포넌트
+- `return` : 부모 컴포넌트
+
+이 중에서 memoizedState는 상태 값들이 연결 리스트 형태로 저장되어 있어서 순회하면서 상태를 꺼낼 수 있었습니다.
+
+### 1.2 React 앱의 루트 노드는 어떻게 찾을까?
 
 <img src="https://i.ibb.co/JPW42yp/image-1.png" alt="image-1" border="0" />
 
@@ -106,22 +118,10 @@ const getFiberRoot = () => {
 
 이렇게 찾은 Fiber Root에서부터 컴포넌트 트리를 따라 내려가며 각 컴포넌트의 상태를 추적할 수 있었습니다.
 
-### 1.2 상태는 어디에 저장되어 있을까?
-
-React에서는 각 컴포넌트를 FiberNode라는 구조로 관리합니다. 이 구조 안에는 다양한 정보가 들어있었습니다.
-
-- `memoizedState` : 현재 컴포넌트에서 사용하는 상태
-- `memoizedProps` : 부모 컴포넌트로부터 받은 props
-- `child` : 자식 컴포넌트
-- `sibling` : 형제 컴포넌트
-- `return` : 부모 컴포넌트
-
-이 중에서 memoizedState는 상태 값들이 연결 리스트 형태로 저장되어 있어서 순회하면서 상태를 꺼낼 수 있었습니다.
-
 ### 1.3 memoizedState만 추적해야하는 이유는 뭘까?
 
 React에서 진짜 상태 변화는 `memoizedState`에서만 발생하기 때문입니다. <br>
-React 컴포넌트는 두 가지 데이터를 가지고 있는데 하나는 자신이 직접 만든 상태, 다른 하나는 부모에게서 전달받은 데이터(Props) 입니다. <br>
+React 컴포넌트는 두 가지 데이터를 가지고 있는데 하나는 컴포넌트 내부에서 생성한 상태이고, 다른 하나는 부모에게서 전달받은 데이터(Props) 입니다. <br>
 
 <a href="https://ibb.co/rGQpBkYm"><img src="https://i.ibb.co/pv1KH2cx/image-2.png" alt="image-2" border="0"></a>
 
@@ -130,8 +130,9 @@ React 컴포넌트는 두 가지 데이터를 가지고 있는데 하나는 자�
 - `memoizedState` : 컴포넌트가 useState와 같이 자신만의 상태를 가지고 있을 때 저장됩니다.
 - `memoizedProps` : 컴포넌트가 Props와 같이 부모로부터 받은 값을 저장합니다.
   <br>
-  React에서 문제가 생기는 순간을 추적하려면 내부적으로 상태가 바뀌는 순간을 감지해야 합니다. 즉, 상태를 직접 가지고 있는 컴포넌트를 추적해야 의미가 있습니다. 반면, memoizedProps는 부모 컴포넌트가 값을 바꿔야만 변하므로 해당 컴포넌트 자체는 단순히 전달받은 것입니다.<br>
-  결론적으로 상태를 직접 가지고 있는 컴포넌트들만 추적함으로써 정확하고 의미 있는 상태 변화 기록을 남기도록 했습니다.
+  React에서 문제를 정확히 추적하려면 직접 상태를 갖고 있는 컴포넌트를 중심으로 봐야 합니다.<br>
+  memoizedProps는 그 자체로는 상태를 변화시키지 않고, 상위 컴포넌트의 영향을 받는 수동적인 데이터이기 때문입니다.<br>
+  결론적으로 `memoizedState`를 기준으로 추적 범위를 제한함으로써 화면 변화에 직접 영향을 주는 핵심 상태만 기록했습니다. 이렇게 하면 불필요한 정보는 제외하고 디버깅에 실질적으로 도움이 되는 상태 변화만 명확하게 확인할 수 있습니다.
 
 <br>
 
@@ -143,7 +144,7 @@ SnapBug는 **상태 변화에 따라 실제 어떤 UI가 렌더링되었는지�
 많은 UI 이슈는 레이아웃 붕괴, 스타일 충돌, 특정 요소 미노출 등 시각적인 결과에서 발생합니다. <br>
 이러한 문제는 상태 값만으로는 재현하거나 공유하기 어렵습니다.
 
-SnapBug는 이를 보완하기 위해 \*React 상태와 함께 해당 시점의 DOM 구조와 CSS 스타일\*\*을 저장합니다.
+SnapBug는 이를 보완하기 위해 **React 상태와 함께 해당 시점의 DOM 구조와 CSS 스타일**을 저장합니다.
 이렇게 저장된 정보는 SnapBug 클라이언트에서 타임라인 형태로 시각화되며
 각 시점마다 “그때 실제로 어떤 UI가 사용자에게 보여졌는가”를 정확히 복원할 수 있도록 합니다.
 
@@ -308,8 +309,11 @@ const invalidKeys = [
 ];
 ```
 
-이 값들 사이에 서로를 참조하는 구조가 존재해 순환 참조를 만들고 JSON으로 직렬화할 수 없는 DOM 노드나 함수도 포함되어 있는 경우가 있었습니다.<br>
-순환 참조가 제거된 상태만 기록하게 되어 JSON.stringify 에러가 사라졌고 React 내부 구조는 제외하고 실제로 의미있는 사용자 상태만 안전하게 저장할 수 있게 되었습니다. 모든 상태 변화에 대해 안정적인 저장 및 비교가 가능해졌습니다.
+이 값들 사이에는 서로를 참조하는 구조가 존재해 순환 참조가 발생하고 그 과정에서 DOM 노드나 함수처럼 JSON으로 직렬화할 수 없는 값들이 포함되어 있었습니다.
+그래서 단순히 상태만 저장하려 해도 React가 내부적으로 사용하는 복잡한 정보까지 함께 들어가면서 상태를 저장하는 과정에서 오류가 발생했습니다.<br>
+그래서 React 내부에서 사용하는 필요 없는 속성들은 미리 제외했습니다.<br>
+그 덕분에 이제는 실제로 화면에 영향을 주는 상태 값들만 안전하게 저장할 수 있게 되었고,
+저장할 때 오류 없이 그리고 나중에 비교할 때도 정확한 상태 변화만 확인할 수 있게 되었습니다.
 
 ## 2. Fiber 트리를 제대로 순회하지 않아 일부 상태가 누락되던 문제
 
@@ -410,7 +414,7 @@ const getDOMHash = () => {
   }
   ```
 
-### 결과 : 의미 있는 변화만 기록하는 구조로 최적화
+### 결과 : 화면에 실질적인 변화가 감지된 시점만 기록하는 구조로 최적화
 
 SnapBug는 이 로직을 실제로 다음과 같이 구현하고 있습니다. `detectStateChange` 함수에서 상태 변경이 감지되면 DOM 문자열을 추출하고, 이를 `getDOMHash()`로 해시화한 뒤 이전 해시값과 비교합니다. <br>
 만약 DOM이 변경된 경우에만 dom과 styles 값을 함께 서버로 전송합니다. 이 구조는 중복 저장을 방지하고 UI 시점 복원에 필요한 최소 정보만 기록하는 방식으로 구성되어 있습니다.
@@ -431,7 +435,31 @@ SnapBug는 이 로직을 실제로 다음과 같이 구현하고 있습니다. `
 ![vercel](https://img.shields.io/badge/vercel-f0f0f0?style=for-the-badge&logo=vercel&logoColor=black)
 ![Git](https://img.shields.io/badge/git-%23F05033.svg?style=for-the-badge&logo=git&logoColor=white) ![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white)
 
-## 1. 배포 - Vercel
+## 1. 프론트엔드 - React + Vite
+
+SnapBug의 핵심은 버튼 클릭 시점마다 상태를 기록하고 UI를 스냅샷처럼 보여주는 구조이기에 CSR(Client Side Rendering) 기반의 빠른 렌더링이 중요했습니다.
+
+- Vite는 변경된 모듈만 빠르게 교체해 빠른 개발 경험 제공
+- React 상태 기록과 CSR에 최적화
+
+## 2. CLI - commander.js
+
+SnapBug는 `snapbug start`, `snapbug end` 등의 CLI 명령어를 통해 상태 기록을 자동화합니다. 이 도구를 만들기 위해 간결한 구문과 학습 난이도가 낮은 CLI 프레임워크가 필요했습니다.
+
+- Yargs, Caporal과 비교해도 사용법이 간단하고 커뮤니티가 활발
+- 작은 프로젝트에서 빠르게 CLI 명령어 구성 가능
+
+## 3. 브라우저 접근 - CDN
+
+초기에는 React 상태를 추적하기 위해 Puppeteer를 사용했습니다. 그러나 다음과 같은 한계를 겪었습니다.
+
+- FiberNode는 브라우저 메모리에만 존재해 Puppeteer로 접근 불가
+- CSR 앱의 렌더링 타이밍을 정확히 맞추기 어려움
+- CORS 문제로 상태 전송 실패
+
+브라우저 내부에서 직접 실행되는 CDN 스크립트를 삽입해 FiberNode에 접근하고, API 서버로 상태를 직접 전송할 수 있도록 구조를 변경했습니다.
+
+## 4. 배포 - Vercel
 
 SnapBug는 사용자가 기록한 상태 스냅샷을 웹에서 바로 확인하고 공유할 수 있는 경험을 제공해야 했습니다. 이를 위해 배포 도구 선택 시 다음 기준을 우선적으로 고려했습니다.
 
@@ -443,30 +471,6 @@ Vercel은 배포 시마다 고유 Preview URL을 제공해 상태 공유가 간�
 인천에 Gateway가 위치해 있어 국내 배포 속도가 빠릅니다.
 CLI를 통한 자동 배포 및 삭제가 간편하게 가능했습니다.
 Netlify, AWS Amplify도 고려했지만, 속도 및 자동화 측면에서 Vercel이 가장 적합하다고 판단했습니다.
-
-## 2. 프론트엔드 - React + Vite
-
-SnapBug의 핵심은 버튼 클릭 시점마다 상태를 기록하고 UI를 스냅샷처럼 보여주는 구조이기에 CSR(Client Side Rendering) 기반의 빠른 렌더링이 중요했습니다.
-
-- Vite는 변경된 모듈만 빠르게 교체해 빠른 개발 경험 제공
-- React 상태 기록과 CSR에 최적화
-
-## 3. CLI - commander.js
-
-SnapBug는 `snapbug start`, `snapbug end` 등의 CLI 명령어를 통해 상태 기록을 자동화합니다. 이 도구를 만들기 위해 간결한 구문과 학습 난이도가 낮은 CLI 프레임워크가 필요했습니다.
-
-- Yargs, Caporal과 비교해도 사용법이 간단하고 커뮤니티가 활발
-- 작은 프로젝트에서 빠르게 CLI 명령어 구성 가능
-
-## 4. 브라우저 접근 - CDN
-
-초기에는 React 상태를 추적하기 위해 Puppeteer를 사용했습니다. 그러나 다음과 같은 한계를 겪었습니다.
-
-- FiberNode는 브라우저 메모리에만 존재해 Puppeteer로 접근 불가
-- CSR 앱의 렌더링 타이밍을 정확히 맞추기 어려움
-- CORS 문제로 상태 전송 실패
-
-브라우저 내부에서 직접 실행되는 CDN 스크립트를 삽입해 FiberNode에 접근하고, API 서버로 상태를 직접 전송할 수 있도록 구조를 변경했습니다.
 
 <br>
 
