@@ -296,9 +296,11 @@ TypeError: Converting circular structure to JSON
 
 React는 상태 업데이트와 렌더링 최적화를 위해 내부적으로 다음과 같은 값들을 memoizedState에 저장합니다.
 
-- queue, deps, baseQueue : 상태 업데이트 대기열과 의존성 정보
-- \_owner, \_store, \_source : 컴포넌트 트리와 연결된 내부 참조
-- destroy, create: useEffect에서 사용되는 클린업 및 생성 함수
+<img src="https://i.ibb.co/LzLnzy03/image.png" alt="image" border="0">
+
+- `queue`, `deps`, `baseQueue` : 상태 업데이트 대기열과 의존성 정보
+- `_owner`, `_store`, `_source` : 컴포넌트 트리와 연결된 내부 참조
+- `destroy`, `create` : useEffect에서 사용되는 클린업 및 생성 함수
 
 이런 값들이 서로 연결되어 있어 순환 구조를 이루며 직렬화할 수 없는 DOM 객체나 함수까지 포함되어 있는 경우가 많았습니다.<br>
 이로 인해 상태만 기록하려 해도 React 내부 구조까지 함께 포함되어 버리는 문제가 발생했습니다.
@@ -354,6 +356,8 @@ while (fiberNode) {
 ### 해결 : 전체 트리를 누락 없이 순회하도록 DFS 방식으로 변경
 
 React Fiber 트리는 실제로 트리 구조를 갖고 있으며 각 노드는 다음과 같은 관계를 가집니다.
+
+<img src="https://i.ibb.co/DncTjRH/image.png" alt="image" border="0">
 
 - child : 자식 노드
 - sibling : 형제 노드
