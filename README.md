@@ -1,13 +1,13 @@
 # 🐞SNAPBUG
 
-SNAPBUG는 React 애플리키에션의 상태 흐름을 자동 추적하고 DOM을 함께 저장하여 디버깅과 공유를 손쉽게 할 수 있도록 돕는 타임트래블 디버깅 툴 입니다.
+SNAPBUG는 React 애플리케이션의 상태 변화와 DOM을 함께 저장해, 디버깅과 상태 공유를 쉽게 만들어주는 타임트래블 디버깅 도구입니다.
 
-## 📖 목차
+## 목차
 
 <!-- toc -->
 
-- [🔥 Motivation](#%F0%9F%94%A5-motivation)
-- [💻 Development](#%F0%9F%92%BB-development)
+- [Motivation](#motivation)
+- [Development](#development)
   - [1. React에서 상태는 어떻게 추적할 수 있을까?](#1-react%EC%97%90%EC%84%9C-%EC%83%81%ED%83%9C%EB%8A%94-%EC%96%B4%EB%96%BB%EA%B2%8C-%EC%B6%94%EC%A0%81%ED%95%A0-%EC%88%98-%EC%9E%88%EC%9D%84%EA%B9%8C)
     - [1.1 상태는 어디에 저장되어 있을까?](#11-%EC%83%81%ED%83%9C%EB%8A%94-%EC%96%B4%EB%94%94%EC%97%90-%EC%A0%80%EC%9E%A5%EB%90%98%EC%96%B4-%EC%9E%88%EC%9D%84%EA%B9%8C)
     - [1.2 React 앱의 루트 노드는 어떻게 찾을까?](#12-react-%EC%95%B1%EC%9D%98-%EB%A3%A8%ED%8A%B8-%EB%85%B8%EB%93%9C%EB%8A%94-%EC%96%B4%EB%96%BB%EA%B2%8C-%EC%B0%BE%EC%9D%84%EA%B9%8C)
@@ -21,9 +21,9 @@ SNAPBUG는 React 애플리키에션의 상태 흐름을 자동 추적하고 DOM�
       - [2. CSR 앱에서는 타이밍 문제로 실패합니다.](#2-csr-%EC%95%B1%EC%97%90%EC%84%9C%EB%8A%94-%ED%83%80%EC%9D%B4%EB%B0%8D-%EB%AC%B8%EC%A0%9C%EB%A1%9C-%EC%8B%A4%ED%8C%A8%ED%95%A9%EB%8B%88%EB%8B%A4)
     - [3.2 외부 API 요청에는 CORS 문제가 있습니다.](#32-%EC%99%B8%EB%B6%80-api-%EC%9A%94%EC%B2%AD%EC%97%90%EB%8A%94-cors-%EB%AC%B8%EC%A0%9C%EA%B0%80-%EC%9E%88%EC%8A%B5%EB%8B%88%EB%8B%A4)
     - [3.3 그래서 CDN + NPM 병행 구조를 선택했습니다.](#33-%EA%B7%B8%EB%9E%98%EC%84%9C-cdn--npm-%EB%B3%91%ED%96%89-%EA%B5%AC%EC%A1%B0%EB%A5%BC-%EC%84%A0%ED%83%9D%ED%96%88%EC%8A%B5%EB%8B%88%EB%8B%A4)
-      - [📌 CDN : script 한 줄로 어디서든 동작하는 상태 추적 스크립트](#%F0%9F%93%8C-cdn--script-%ED%95%9C-%EC%A4%84%EB%A1%9C-%EC%96%B4%EB%94%94%EC%84%9C%EB%93%A0-%EB%8F%99%EC%9E%91%ED%95%98%EB%8A%94-%EC%83%81%ED%83%9C-%EC%B6%94%EC%A0%81-%EC%8A%A4%ED%81%AC%EB%A6%BD%ED%8A%B8)
-      - [📌 NPM : 프로젝트에 설치하여 CLI 도구로 활용](#%F0%9F%93%8C-npm--%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8%EC%97%90-%EC%84%A4%EC%B9%98%ED%95%98%EC%97%AC-cli-%EB%8F%84%EA%B5%AC%EB%A1%9C-%ED%99%9C%EC%9A%A9)
-- [👾 Trouble Shooting](#%F0%9F%91%BE-trouble-shooting)
+      - [CDN : script 한 줄로 어디서든 동작하는 상태 추적 스크립트](#cdn--script-%ED%95%9C-%EC%A4%84%EB%A1%9C-%EC%96%B4%EB%94%94%EC%84%9C%EB%93%A0-%EB%8F%99%EC%9E%91%ED%95%98%EB%8A%94-%EC%83%81%ED%83%9C-%EC%B6%94%EC%A0%81-%EC%8A%A4%ED%81%AC%EB%A6%BD%ED%8A%B8)
+      - [NPM : 프로젝트에 설치하여 CLI 도구로 활용](#npm--%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8%EC%97%90-%EC%84%A4%EC%B9%98%ED%95%98%EC%97%AC-cli-%EB%8F%84%EA%B5%AC%EB%A1%9C-%ED%99%9C%EC%9A%A9)
+- [Trouble Shooting](#trouble-shooting)
   - [1. React 내부 상태의 순환 참조로 인한 상태 전송 실패를 안전한 상태 필터링으로 해결](#1-react-%EB%82%B4%EB%B6%80-%EC%83%81%ED%83%9C%EC%9D%98-%EC%88%9C%ED%99%98-%EC%B0%B8%EC%A1%B0%EB%A1%9C-%EC%9D%B8%ED%95%9C-%EC%83%81%ED%83%9C-%EC%A0%84%EC%86%A1-%EC%8B%A4%ED%8C%A8%EB%A5%BC-%EC%95%88%EC%A0%84%ED%95%9C-%EC%83%81%ED%83%9C-%ED%95%84%ED%84%B0%EB%A7%81%EC%9C%BC%EB%A1%9C-%ED%95%B4%EA%B2%B0)
     - [원인 : React 상태 구조는 내부적으로 순환 참조를 포함하고 있다.](#%EC%9B%90%EC%9D%B8--react-%EC%83%81%ED%83%9C-%EA%B5%AC%EC%A1%B0%EB%8A%94-%EB%82%B4%EB%B6%80%EC%A0%81%EC%9C%BC%EB%A1%9C-%EC%88%9C%ED%99%98-%EC%B0%B8%EC%A1%B0%EB%A5%BC-%ED%8F%AC%ED%95%A8%ED%95%98%EA%B3%A0-%EC%9E%88%EB%8B%A4)
     - [해결 : 순환 참조를 막는 안전한 상태 필터링을 하자.](#%ED%95%B4%EA%B2%B0--%EC%88%9C%ED%99%98-%EC%B0%B8%EC%A1%B0%EB%A5%BC-%EB%A7%89%EB%8A%94-%EC%95%88%EC%A0%84%ED%95%9C-%EC%83%81%ED%83%9C-%ED%95%84%ED%84%B0%EB%A7%81%EC%9D%84-%ED%95%98%EC%9E%90)
@@ -36,13 +36,13 @@ SNAPBUG는 React 애플리키에션의 상태 흐름을 자동 추적하고 DOM�
     - [문제: DOM이 변하지 않았는데도 매번 전체 DOM과 스타일이 저장됨](#%EB%AC%B8%EC%A0%9C-dom%EC%9D%B4-%EB%B3%80%ED%95%98%EC%A7%80-%EC%95%8A%EC%95%98%EB%8A%94%EB%8D%B0%EB%8F%84-%EB%A7%A4%EB%B2%88-%EC%A0%84%EC%B2%B4-dom%EA%B3%BC-%EC%8A%A4%ED%83%80%EC%9D%BC%EC%9D%B4-%EC%A0%80%EC%9E%A5%EB%90%A8)
     - [해결 : DOM의 해시값을 비교해 변화가 있는 시점에만 저장하는 구조로 전환](#%ED%95%B4%EA%B2%B0--dom%EC%9D%98-%ED%95%B4%EC%8B%9C%EA%B0%92%EC%9D%84-%EB%B9%84%EA%B5%90%ED%95%B4-%EB%B3%80%ED%99%94%EA%B0%80-%EC%9E%88%EB%8A%94-%EC%8B%9C%EC%A0%90%EC%97%90%EB%A7%8C-%EC%A0%80%EC%9E%A5%ED%95%98%EB%8A%94-%EA%B5%AC%EC%A1%B0%EB%A1%9C-%EC%A0%84%ED%99%98)
     - [결과 : 화면에 실질적인 변화가 감지된 시점만 기록하는 구조로 최적화](#%EA%B2%B0%EA%B3%BC--%ED%99%94%EB%A9%B4%EC%97%90-%EC%8B%A4%EC%A7%88%EC%A0%81%EC%9D%B8-%EB%B3%80%ED%99%94%EA%B0%80-%EA%B0%90%EC%A7%80%EB%90%9C-%EC%8B%9C%EC%A0%90%EB%A7%8C-%EA%B8%B0%EB%A1%9D%ED%95%98%EB%8A%94-%EA%B5%AC%EC%A1%B0%EB%A1%9C-%EC%B5%9C%EC%A0%81%ED%99%94)
-- [📂 Tech stack](#%F0%9F%93%82-tech-stack)
+- [Tech stack](#tech-stack)
   - [개발 환경](#%EA%B0%9C%EB%B0%9C-%ED%99%98%EA%B2%BD)
   - [1. 프론트엔드 - React + Vite](#1-%ED%94%84%EB%A1%A0%ED%8A%B8%EC%97%94%EB%93%9C---react--vite)
   - [2. CLI - commander.js](#2-cli---commanderjs)
   - [3. 브라우저 접근 - CDN](#3-%EB%B8%8C%EB%9D%BC%EC%9A%B0%EC%A0%80-%EC%A0%91%EA%B7%BC---cdn)
   - [4. 배포 - Vercel](#4-%EB%B0%B0%ED%8F%AC---vercel)
-- [🔗 Workflow](#%F0%9F%94%97-workflow)
+- [Workflow](#workflow)
   - [Git 브랜치 전략](#git-%EB%B8%8C%EB%9E%9C%EC%B9%98-%EC%A0%84%EB%9E%B5)
   - [코드 작성 & 리뷰 방식](#%EC%BD%94%EB%93%9C-%EC%9E%91%EC%84%B1--%EB%A6%AC%EB%B7%B0-%EB%B0%A9%EC%8B%9D)
     - [PR & 이슈 기반 협업 사이클](#pr--%EC%9D%B4%EC%8A%88-%EA%B8%B0%EB%B0%98-%ED%98%91%EC%97%85-%EC%82%AC%EC%9D%B4%ED%81%B4)
@@ -50,7 +50,10 @@ SNAPBUG는 React 애플리키에션의 상태 흐름을 자동 추적하고 DOM�
     - [코드 리뷰 가이드라인](#%EC%BD%94%EB%93%9C-%EB%A6%AC%EB%B7%B0-%EA%B0%80%EC%9D%B4%EB%93%9C%EB%9D%BC%EC%9D%B8)
     - [기본 구조](#%EA%B8%B0%EB%B3%B8-%EA%B5%AC%EC%A1%B0)
     - [커밋 타입](#%EC%BB%A4%EB%B0%8B-%ED%83%80%EC%9E%85)
-- [💬 Retrospective](#%F0%9F%92%AC-retrospective)
+  - [작업 방식](#%EC%9E%91%EC%97%85-%EB%B0%A9%EC%8B%9D)
+    - [깃허브 칸반 보드](#%EA%B9%83%ED%97%88%EB%B8%8C-%EC%B9%B8%EB%B0%98-%EB%B3%B4%EB%93%9C)
+    - [기록으로 소통의 공백을 채우다](#%EA%B8%B0%EB%A1%9D%EC%9C%BC%EB%A1%9C-%EC%86%8C%ED%86%B5%EC%9D%98-%EA%B3%B5%EB%B0%B1%EC%9D%84-%EC%B1%84%EC%9A%B0%EB%8B%A4)
+- [Retrospective](#retrospective)
   - [정도원](#%EC%A0%95%EB%8F%84%EC%9B%90)
   - [이세경](#%EC%9D%B4%EC%84%B8%EA%B2%BD)
 
@@ -58,25 +61,28 @@ SNAPBUG는 React 애플리키에션의 상태 흐름을 자동 추적하고 DOM�
 
 <br>
 
-# 🔥 Motivation
+# Motivation
 
 이번 팀 프로젝트의 주요 목표는 **React 앱에서 발생하는 문제를 효과적으로 추적하고, 팀원과 상태를 공유할 수 있는 디버깅 도구를 만드는 것**이었습니다.<br>
-협업에서 가장 어려웠던 점은 특정 상태에서 어떤 UI가 그려졌고, 에러가 발생했는지를 정확히 재현하고 공유하는 것이었습니다. <br>예상치 못한 UI 렌더링, 꼬인 상태 흐름, 설명하기 어려운 시점의 버그들은 회고나 리뷰 과정에서도 재현이 어렵고 공유 또한 쉽지 않았습니다.<br>
-이 아이디어는 Redux의 DevTools의 Time Travel 기능에서 영감을 받아 확장되었습니다. Redux Time Travel엔 Redux로 관리되지 않는 상태는 추적할 수 없다는 점, CSS나 외부 환경, 에러 상태는 재현되지 않는다는 한계가 있었습니다.<br>
-그래서 SNAPBUG는 <br>
+
+**협업 중 가장 큰 어려움은 에러 상황을 정확히 재현하고 공유하는 일이었습니다.** 예를 들어, 버튼을 클릭했을 때 예상과 다른 화면이 나타나거나, 특정 순서로만 발생하는 오류는 설명이 복잡했습니다. 동일한 문제 상황을 물리적으로 떨어져 있는 팀원들에게 반복적으로 설명해야 했고, 화면을 직접 보여줄 수 없어 상황의 맥락을 정확히 전달하기가 번거로웠습니다.<br>
+
+이런 문제를 해결하기 위해, 기존에 사용하던 **Redux DevTools**의 **Time Travel** 기능에서 아이디어를 얻었습니다. Redux DevTools는 상태의 변화를 시간 순서대로 추적할 수 있어 유용하지만 한계가 있었습니다. **Redux로 관리되지 않는 상태는 추적할 수 없었고**, **실제 렌더링 결과(CSS, 외부 환경, 에러 상태 등)를 저장하지 못했습니다**.
+
+그래서 SNAPBUG는
 
 - 모든 React 상태를 수집합니다.
 - 실제 렌더링 된 DOM과 CSS를 함께 저장합니다.
 - 당시의 UI를 정적 스냅샷처럼 저장합니다.
 - 배포하여 URL로 공유하고 재현합니다.
-  <br>
-  실제 화면을 재현하고, 타임라인처럼 상태 변화를 따라가며,
-  협업 과정에서의 “설명하기 어려운 순간들”을 직관적으로 전달할 수 있는 경험을 제공하고자
-  이러한 서비스를 만들게 되었습니다.
+
+<br>
+
+협업 과정에서 발생한 문제를 보다 정확하게 재현하고, 손쉽게 공유할 수 있도록 서비스를 개발하게 되었습니다.
 
 <br />
 
-# 💻 Development
+# Development
 
 ## 1. React에서 상태는 어떻게 추적할 수 있을까?
 
@@ -245,7 +251,7 @@ SnapBug는 서버가 아닌 브라우저 내부에서 직접 실행되는 방식
 이 구조 덕분에 React 앱과 **같은 환경(origin)**에서 상태를 추적하고 서버에 전송할 수 있어
 Puppeteer가 풀지 못한 FiberNode 접근 문제와 CORS 이슈를 동시에 해결할 수 있었습니다.
 
-#### 📌 CDN : script 한 줄로 어디서든 동작하는 상태 추적 스크립트
+#### CDN : script 한 줄로 어디서든 동작하는 상태 추적 스크립트
 
 CDN(Content Delivery Network)은 전 세계 어디서든 동일한 파일을 불러올 수 있게 해주는 배포 방식입니다.
 SnapBug는 상태 추적 스크립트를 CDN으로 제공해 브라우저에서 직접 실행될 수 있도록 했습니다.
@@ -260,7 +266,7 @@ https://snap-bug-cdn.vercel.app/stateTracker.v1.iife.js
 - CSR 앱, iframe 등 환경에 상관없이 작동합니다.
 - 별도 빌드나 설치 없이도 추적 스크립트가 바로 상태를 감지하고 서버로 전송이 가능합니다.
 
-#### 📌 NPM : 프로젝트에 설치하여 CLI 도구로 활용
+#### NPM : 프로젝트에 설치하여 CLI 도구로 활용
 
 NPM(Node Package Manager)은 Node.js 프로젝트에서 외부 라이브러리를 설치할 수 있게 해주는 도구입니다.<br>
 SnapBug는 NPM 패키지로도 배포되어 있습니다. CLI 환경에서 다음과 같이 프로젝트에 직접 설치할 수 있습니다:
@@ -274,7 +280,7 @@ npm install snapbug
 
 <br>
 
-# 👾 Trouble Shooting
+# Trouble Shooting
 
 ## 1. React 내부 상태의 순환 참조로 인한 상태 전송 실패를 안전한 상태 필터링으로 해결
 
@@ -430,19 +436,17 @@ SnapBug는 이 로직을 실제로 다음과 같이 구현하고 있습니다. `
 
 <br>
 
-# 📂 Tech stack
+# Tech stack
 
 ## 개발 환경
 
-![javascript](https://img.shields.io/badge/javascript-%23323330.svg?style=for-the-badge&logo=javascript&logoColor=23F7DF1E)
-![express](https://img.shields.io/badge/express-000000.svg?style=for-the-badge&logo=express&logoColor=white)
-![React](https://img.shields.io/badge/React-61DAFB.svg?style=for-the-badge&logo=React&logoColor=white)
-![Vite](https://img.shields.io/badge/vite-%23646CFF.svg?style=for-the-badge&logo=vite&logoColor=white)
-![tailwindcss](https://img.shields.io/badge/tailwindcss-61DAFB?style=for-the-badge&logo=tailwindcss&logoColor=white)
-![ESLint](https://img.shields.io/badge/ESLint-FFD93E?style=for-the-badge&logo=eslint&logoColor=white) ![Prettier](https://img.shields.io/badge/Prettier-pink?style=for-the-badge&logo=prettier&logoColor=white)
-![npm](https://img.shields.io/badge/npm-red?style=for-the-badge&logo=npm&logoColor=white)
-![vercel](https://img.shields.io/badge/vercel-f0f0f0?style=for-the-badge&logo=vercel&logoColor=black)
-![Git](https://img.shields.io/badge/git-%23F05033.svg?style=for-the-badge&logo=git&logoColor=white) ![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white)
+| 구분                      | 사용 기술                                                                                                                                                                                                                                                                                                                  |
+| ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **개발 언어**             | ![JavaScript](https://img.shields.io/badge/javascript-%23323330.svg?style=for-the-badge&logo=javascript&logoColor=23F7DF1E)                                                                                                                                                                                                |
+| **프레임워크/라이브러리** | ![React](https://img.shields.io/badge/React-61DAFB.svg?style=for-the-badge&logo=React&logoColor=white) ![Vite](https://img.shields.io/badge/vite-%23646CFF.svg?style=for-the-badge&logo=vite&logoColor=white) ![Express](https://img.shields.io/badge/express-000000.svg?style=for-the-badge&logo=express&logoColor=white) |
+| **스타일링**              | ![TailwindCSS](https://img.shields.io/badge/tailwindcss-61DAFB?style=for-the-badge&logo=tailwindcss&logoColor=white)                                                                                                                                                                                                       |
+| **개발 도구**             | ![ESLint](https://img.shields.io/badge/ESLint-FFD93E?style=for-the-badge&logo=eslint&logoColor=white) ![Prettier](https://img.shields.io/badge/Prettier-pink?style=for-the-badge&logo=prettier&logoColor=white) ![npm](https://img.shields.io/badge/npm-red?style=for-the-badge&logo=npm&logoColor=white)                  |
+| **배포 및 협업**          | ![Vercel](https://img.shields.io/badge/vercel-f0f0f0?style=for-the-badge&logo=vercel&logoColor=black) ![Git](https://img.shields.io/badge/git-%23F05033.svg?style=for-the-badge&logo=git&logoColor=white) ![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white)     |
 
 ## 1. 프론트엔드 - React + Vite
 
@@ -483,11 +487,11 @@ Netlify, AWS Amplify도 고려했지만, 속도 및 자동화 측면에서 Verce
 
 <br>
 
-# 🔗 Workflow
+# Workflow
 
-SnapBug는 단순히 기능만 만드는 걸 넘어서 함께 효율적으로 개발하기 위한 팀 작업 방식도 처음부터 함께 의논했습니다.<br>
-처음 협업을 시작할 때부터 Git 브랜치 전략, 코드 리뷰 방법, 커밋 메시지 형식 같은 규칙을 정해두고
-모든 작업은 이슈를 만들고 그에 맞춰 진행하는 방식으로 관리했습니다.
+SnapBug 프로젝트는 기능을 구현하는 것에 그치지 않고, 처음부터 협업 방식까지 함께 정리하며 일정한 규칙을 기반으로 개발을 시작했습니다.
+
+Git 브랜치 전략, 코드 리뷰 방식, 커밋 메시지에 대한 기준을 정하고, 모든 작업은 이슈 기반으로 관리하며 팀 전체가 같은 방식으로 소통하고자 했습니다.
 
 ## Git 브랜치 전략
 
@@ -510,30 +514,28 @@ SnapBug는 **Git Flow 전략**을 기반으로 다음과 같은 브랜치 정책
 
 모든 작업은 다음 순서로 진행했습니다.
 
-1. `dev` 브랜치 최신화
-   → `git pull origin dev`
+1. `dev` 브랜치 최신화 (`git pull origin dev`)
 2. `feature/기능명` 브랜치 생성 후 작업
-3. 완료된 작업은 **이슈와 연결된 PR**로 등록
+3. 완료된 작업은 **연결된 이슈와 함께 PR**로 등록
 4. 팀원에게 **코드 리뷰 요청**
 5. 리뷰어는 **1시간 이내 피드백 제공**
-6. 리뷰어 `approve` 후 PR 작성자가 `squash-merge` 수행
+6. 리뷰 승인 후, 작성자가 `squash-merge` 수행
 
 ### PR 템플릿 기반 커뮤니케이션
 
 PR에는 다음 내용을 포함해 변경 사항을 명확히 공유했습니다:
 
 - 연결된 이슈 번호
-- 작업 요약
-- 스크린샷 (필요 시)
+- 작업 내용 요약
+- 스크린샷 (UI 관련 변경 시)
 - 리뷰 포인트 및 참고사항
-
----
 
 ### 코드 리뷰 가이드라인
 
-- 리뷰할 내용이 없을 경우 칭찬 또는 구현 맥락 확인에 집중
-- 리팩토링 포인트나 최적화 방향이 있다면 **근거와 함께 제안**
-- 참고: [카카오 테크 블로그 - 리뷰어의 자세](https://tech.kakao.com/posts/498)
+- 리뷰할 내용이 없는 경우에도 구현 의도나 맥락에 대한 확인을 남김
+- 리팩토링이나 개선이 필요한 경우, **구체적인 근거와 함께 제안**
+- 리뷰는 단순 승인보다 기능 완성도와 코드 품질 향상에 초점
+  > 참고: [카카오 테크 블로그 - 리뷰어의 자세](https://tech.kakao.com/posts/498)
 
 ### 기본 구조
 
@@ -558,9 +560,37 @@ footer (선택, 이슈 번호)
 | `test`     | 테스트 코드 추가 또는 수정        |
 | `chore`    | 설정, 빌드 관련 작업              |
 
----
+## 작업 방식
 
-# 💬 Retrospective
+### 깃허브 칸반 보드
+
+본 프로젝트는 **GitHub Projects의 칸반 보드를 활용**해 작업을 관리했습니다.
+`To Do`, `In Progress`, `Done`의 단계를 구분하여 시각적으로 구성했고, 라벨과 마일스톤을 통해 우선순위와 기한을 명확하게 설정했습니다. 매일 오전 회의에서 보드 상태를 확인했습니다.
+
+우선순위는 아래와 같이 `P0`, `P1`, `P2` 라벨을 사용해 구분했습니다.
+
+- **P0** : 즉시 해결이 필요한 핵심 작업
+- **P1** : 일정 내 처리해야 할 주요 작업
+- **P2** : 낮은 우선순위로 개선 작업이나 리팩토링 작업
+
+모든 작업에는 담당자와 예상 완료일을 명시하여, 책임감 있는 업무 진행이 가능하도록했습니다.
+
+### 기록으로 소통의 공백을 채우다
+
+> 결정의 이유와 작업 히스토리를 기록하기 위해 회의록을 작성하였습니다.
+
+초기에는 모든 팀원이 같은 공간에서 장시간 함께 작업하며, 구현과 회의를 병행했습니다. 의사소통은 자연스럽게 이루어졌고, 충분히 공유되고 있다고 생각했습니다. 시간이 지날수록 논의 내용을 다르게 기억하거나, 결정의 배경을 명확히 설명하기 어려운 상황이 생겼습니다. 작업을 이어받아야 할 경우 앞선 작업의 맥락이나 구현 의도를 정확히 파악하지 못하면, 불필요한 수정이 발생했습니다.
+
+회의 내용을 정리해두면 누구든 바로 다음 작업을 이어받을 수 있고, 예상치 못한 문제가 발생했을 때도 의사결정의 맥락을 빠르게 추적할 수 있습니다. 이러한 경험을 통해, 대화만으로는 협업의 연속성을 보장하기 어렵다는 점을 인식하게 되었습니다.
+
+이에 따라 모든 회의 내용을 Notion에 회의록으로 기록하기 시작했습니다. [🔗 회의록 링크](https://omniscient-robe-af6.notion.site/1ab55d59f1a7805c960cc6691921dee1?v=1ab55d59f1a78198b475000c1d5c1618&pvs=4)
+
+<img width="947" alt="스냅버그_회의록" src="https://github.com/user-attachments/assets/f41673e7-f9a7-45ec-a136-6a5171de3488" />
+
+- 각 회의록에는 날짜, 논의 주제, 결정 사항, 후속 작업을 항목별로 정리했습니다.
+- 구조 변경과 같이 장기적인 영향을 미치는 내용은 회의록 및 별도의 문서로 기록해, 문서와 실제 코드가 일치하도록 관리했습니다.
+
+# Retrospective
 
 ### 정도원
 
