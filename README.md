@@ -107,7 +107,7 @@ SNAPBUG는 **React 애플리케이션**의 **상태 변화**와 **DOM**을 함�
 
   <img src="https://github.com/user-attachments/assets/565063e3-c63c-4072-b9e5-686accf36129" alt="snapbug환경설정" />
 
-- **Snapbug 디버깅 화면 배포**
+- **Snapbug 배포**
 
   <img src="https://github.com/user-attachments/assets/07ea6c9c-a51d-4fc5-8c7e-f24f61dee12f" alt="snapbug배포" />
 
@@ -484,10 +484,7 @@ SnapBug는 이 로직을 실제로 다음과 같이 구현하고 있습니다. `
 이후 `npm run dev`로 개발 서버를 실행하면, 브라우저에서 상태 변화와 DOM 구조 변경이 자동으로 기록됩니다.
 
 ```javascript
-<script
-  defer
-  src="https://snap-bug-cdn.vercel.app/stateTracker.v1.iife.js"
-></script>
+<script defer src="https://snap-bug-cdn.vercel.app/stateTracker.v1.iife.js"></script>
 ```
 
 <img src="https://github.com/user-attachments/assets/f0e0c09a-11f0-43b8-9f4f-f8748a84e605" width=300/>
@@ -537,7 +534,7 @@ UI는 상태 히스토리를 블록 단위로 시각화하고, 각 시점의 UI�
 <img src="https://github.com/user-attachments/assets/4dd20f4e-5ba4-4ad2-9f0f-364ff3c0a3c1" width=300/>
 
 - **좌측 타임라인 바**에서 **상태 변화 히스토리**를 **탐색**할 수 있습니다.
-- **`Previous(이전)`**와 **`Next(다음)`**버튼 및 **타임라인 내 블럭**을 클릭하면 **해당 시점의 UI로 이동**합니다.
+- **`Previous(이전)`** 와 **`Next(다음)`** 버튼 및 **타임라인 내 블럭**을 클릭하면 **해당 시점의 UI로 이동**합니다.
 - **우측 화면에는 변화 당시** DOM과 CSS 스타일이 적용된 **UI가 재현**됩니다.
 
 DOM과 상태값을 포함한 변화 시점의 UI를 직관적으로 확인할 수 있으며, URL을 공유해 디버깅 상황을 팀원과 쉽게 공유할 수 있습니다.
