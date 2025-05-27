@@ -1,12 +1,26 @@
+<div align="center">
+
 # 🐞SNAPBUG
 
-SNAPBUG는 React 애플리케이션의 상태 변화와 DOM을 함께 저장해, 디버깅과 상태 공유를 쉽게 만들어주는 타임트래블 디버깅 도구입니다.
+SNAPBUG는 **React 애플리케이션**의 **상태 변화**와 **DOM**을 함께 저장해,<br> **디버깅**과 **상태 공유**를 쉽게 만들어주는 **타임트래블 디버깅** 도구입니다.
+
+</div>
+
+<br>
+
+<div align="center">
+<a href="https://github.com/snap-bug/snap-bug-cli">CLI Repository</a> | <a href="https://github.com/snap-bug/snap-bug-cdn">CDN Repository</a> |
+<a href="https://www.notion.so/SNAP-BUG-1a955d59f1a78023b3c7d081eedf1cee?pvs=4">Team Notion</a>
+</div>
+
+<br><br>
 
 ## 목차
 
 <!-- toc -->
 
 - [Motivation](#motivation)
+- [Preview](#preview)
 - [Development](#development)
   - [1. React에서 상태는 어떻게 추적할 수 있을까?](#1-react%EC%97%90%EC%84%9C-%EC%83%81%ED%83%9C%EB%8A%94-%EC%96%B4%EB%96%BB%EA%B2%8C-%EC%B6%94%EC%A0%81%ED%95%A0-%EC%88%98-%EC%9E%88%EC%9D%84%EA%B9%8C)
     - [1.1 상태는 어디에 저장되어 있을까?](#11-%EC%83%81%ED%83%9C%EB%8A%94-%EC%96%B4%EB%94%94%EC%97%90-%EC%A0%80%EC%9E%A5%EB%90%98%EC%96%B4-%EC%9E%88%EC%9D%84%EA%B9%8C)
@@ -36,6 +50,11 @@ SNAPBUG는 React 애플리케이션의 상태 변화와 DOM을 함께 저장해,
     - [문제: DOM이 변하지 않았는데도 매번 전체 DOM과 스타일이 저장됨](#%EB%AC%B8%EC%A0%9C-dom%EC%9D%B4-%EB%B3%80%ED%95%98%EC%A7%80-%EC%95%8A%EC%95%98%EB%8A%94%EB%8D%B0%EB%8F%84-%EB%A7%A4%EB%B2%88-%EC%A0%84%EC%B2%B4-dom%EA%B3%BC-%EC%8A%A4%ED%83%80%EC%9D%BC%EC%9D%B4-%EC%A0%80%EC%9E%A5%EB%90%A8)
     - [해결 : DOM의 해시값을 비교해 변화가 있는 시점에만 저장하는 구조로 전환](#%ED%95%B4%EA%B2%B0--dom%EC%9D%98-%ED%95%B4%EC%8B%9C%EA%B0%92%EC%9D%84-%EB%B9%84%EA%B5%90%ED%95%B4-%EB%B3%80%ED%99%94%EA%B0%80-%EC%9E%88%EB%8A%94-%EC%8B%9C%EC%A0%90%EC%97%90%EB%A7%8C-%EC%A0%80%EC%9E%A5%ED%95%98%EB%8A%94-%EA%B5%AC%EC%A1%B0%EB%A1%9C-%EC%A0%84%ED%99%98)
     - [결과 : 화면에 실질적인 변화가 감지된 시점만 기록하는 구조로 최적화](#%EA%B2%B0%EA%B3%BC--%ED%99%94%EB%A9%B4%EC%97%90-%EC%8B%A4%EC%A7%88%EC%A0%81%EC%9D%B8-%EB%B3%80%ED%99%94%EA%B0%80-%EA%B0%90%EC%A7%80%EB%90%9C-%EC%8B%9C%EC%A0%90%EB%A7%8C-%EA%B8%B0%EB%A1%9D%ED%95%98%EB%8A%94-%EA%B5%AC%EC%A1%B0%EB%A1%9C-%EC%B5%9C%EC%A0%81%ED%99%94)
+- [User Experience](#user-experience)
+  - [1. 상태 추적 스크립트 삽입](#1-%EC%83%81%ED%83%9C-%EC%B6%94%EC%A0%81-%EC%8A%A4%ED%81%AC%EB%A6%BD%ED%8A%B8-%EC%82%BD%EC%9E%85)
+  - [2. 상태 및 UI 변화 저장](#2-%EC%83%81%ED%83%9C-%EB%B0%8F-ui-%EB%B3%80%ED%99%94-%EC%A0%80%EC%9E%A5)
+  - [3. 배포 및 UI 복원 화면](#3-%EB%B0%B0%ED%8F%AC-%EB%B0%8F-ui-%EB%B3%B5%EC%9B%90-%ED%99%94%EB%A9%B4)
+  - [4. 브라우저에서 상태 히스토리 확인](#4-%EB%B8%8C%EB%9D%BC%EC%9A%B0%EC%A0%80%EC%97%90%EC%84%9C-%EC%83%81%ED%83%9C-%ED%9E%88%EC%8A%A4%ED%86%A0%EB%A6%AC-%ED%99%95%EC%9D%B8)
 - [Tech stack](#tech-stack)
   - [개발 환경](#%EA%B0%9C%EB%B0%9C-%ED%99%98%EA%B2%BD)
   - [1. 프론트엔드 - React + Vite](#1-%ED%94%84%EB%A1%A0%ED%8A%B8%EC%97%94%EB%93%9C---react--vite)
@@ -80,14 +99,30 @@ SNAPBUG는 React 애플리케이션의 상태 변화와 DOM을 함께 저장해,
 
 협업 과정에서 발생한 문제를 보다 정확하게 재현하고, 손쉽게 공유할 수 있도록 서비스를 개발하게 되었습니다.
 
-<br />
+<br>
+
+# Preview
+
+- **Snapbug 설치 및 상태 추적 스크립트 연결**
+
+  <img src="https://github.com/user-attachments/assets/565063e3-c63c-4072-b9e5-686accf36129" alt="snapbug환경설정" />
+
+- **Snapbug 디버깅 화면 배포**
+
+  <img src="https://github.com/user-attachments/assets/07ea6c9c-a51d-4fc5-8c7e-f24f61dee12f" alt="snapbug배포" />
+
+- **배포된 Snapbug 페이지**
+
+  <img src="https://github.com/user-attachments/assets/92657150-0620-47db-b0f2-0e9e5814d9aa" alt="snapbug페이지" />
+
+<br>
 
 # Development
 
 ## 1. React에서 상태는 어떻게 추적할 수 있을까?
 
-**React의 상태는 FiberNode라는 내부 구조에 저장됩니다.**<br>
-저희는 상태 추적을 위해 React의 Fiber 구조를 직접 탐색하는 방식을 택했습니다. 상태를 추적하기 위해서는 먼저 React 앱의 최상위 루트 노드(Fiber Root) 를 찾고 그 아래에 있는 각 컴포넌트들의 상태를 하나하나 순회하면서 기록해야 했습니다.
+**React의 상태는 FiberNode라는 내부 구조에 저장됩니다.** 저희는 상태 추적을 위해 React의 Fiber 구조를 직접 탐색하는 방식을 택했습니다.
+상태를 추적하기 위해서는 먼저 React 앱의 최상위 루트 노드(Fiber Root) 를 찾고 그 아래에 있는 각 컴포넌트들의 상태를 하나하나 순회하면서 기록해야 했습니다.
 
 ### 1.1 상태는 어디에 저장되어 있을까?
 
@@ -440,6 +475,75 @@ SnapBug는 이 로직을 실제로 다음과 같이 구현하고 있습니다. `
 
 <br>
 
+# User Experience
+
+## 1. 상태 추적 스크립트 삽입
+
+**Snapbug의 상태 추적 기능은 npm 설치 명령어와 CDN 스크립트 한 줄로 연동할 수 있습니다.**
+`npm install snapbug` 명령어로 패키지를 설치한 뒤, 프로젝트의 최상단 `index.html` 파일에 제공된 스크립트를 추가합니다.
+이후 `npm run dev`로 개발 서버를 실행하면, 브라우저에서 상태 변화와 DOM 구조 변경이 자동으로 기록됩니다.
+
+```javascript
+<script
+  defer
+  src="https://snap-bug-cdn.vercel.app/stateTracker.v1.iife.js"
+></script>
+```
+
+<img src="https://github.com/user-attachments/assets/f0e0c09a-11f0-43b8-9f4f-f8748a84e605" width=300/>
+
+스크립트는 React 루트 노드부터 상태와 DOM 변경을 감지하고, 기록합니다.
+
+<br>
+
+## 2. 상태 및 UI 변화 저장
+
+개발자가 `npm run dev`로 개발 서버를 실행하면, 브라우저에서 발생하는 사용자 동작(예: 클릭, 입력 등)에 따라 앱의 상태와 UI가 변하게 됩니다.
+
+<img src="https://github.com/user-attachments/assets/b9290fce-81ac-44ec-b939-1d8b119ad79a" width=300/>
+
+변화가 발생할 때마다, 다음 정보를 자동으로 기록합니다.
+
+- 변화된 상태(State)
+- 해당 시점의 DOM 구조
+- 적용된 CSS 스타일
+- 저장 시각(timestamp)
+
+Snapbug는 이 정보를 `snapbug-status.json` 파일에 순차적으로 저장하고, 이후 UI를 복원할 때 사용합니다.
+
+<br>
+
+## 3. 배포 및 UI 복원 화면
+
+상태 히스토리를 브라우저에서 확인하고 공유하려면, 아래 명령어를 실행합니다.
+
+```shell
+npx snapbug run
+```
+
+<img src="https://github.com/user-attachments/assets/988e623e-d6cd-4ac1-a467-19c5cf755a56" width=300/>
+
+이 명령어는 저장된 JSON 데이터를 기반으로 Snapbug 클라이언트 UI를 구성합니다.
+UI는 상태 히스토리를 블록 단위로 시각화하고, 각 시점의 UI를 그대로 재현합니다.
+명령어 실행 후 Vite로 빌드가 수행되고, Vercel에 자동으로 배포됩니다. 배포가 완료되면 URL이 터미널에 출력됩니다.
+
+<br>
+
+## 4. 브라우저에서 상태 히스토리 확인
+
+배포된 URL로 접속하면, 상태 히스토리를 확인할 수 있습니다.
+
+<img src="https://github.com/user-attachments/assets/684b555c-2def-46a0-9071-a8065d95b853" width=300/>
+<img src="https://github.com/user-attachments/assets/4dd20f4e-5ba4-4ad2-9f0f-364ff3c0a3c1" width=300/>
+
+- **좌측 타임라인 바**에서 **상태 변화 히스토리**를 **탐색**할 수 있습니다.
+- **`Previous(이전)`**와 **`Next(다음)`**버튼 및 **타임라인 내 블럭**을 클릭하면 **해당 시점의 UI로 이동**합니다.
+- **우측 화면에는 변화 당시** DOM과 CSS 스타일이 적용된 **UI가 재현**됩니다.
+
+DOM과 상태값을 포함한 변화 시점의 UI를 직관적으로 확인할 수 있으며, URL을 공유해 디버깅 상황을 팀원과 쉽게 공유할 수 있습니다.
+
+<br>
+
 # Tech stack
 
 ## 개발 환경
@@ -539,7 +643,6 @@ PR에는 다음 내용을 포함해 변경 사항을 명확히 공유했습니�
 - 리뷰할 내용이 없는 경우에도 구현 의도나 맥락에 대한 확인을 남김
 - 리팩토링이나 개선이 필요한 경우, **구체적인 근거와 함께 제안**
 - 리뷰는 단순 승인보다 기능 완성도와 코드 품질 향상에 초점
-  > 참고: [카카오 테크 블로그 - 리뷰어의 자세](https://tech.kakao.com/posts/498)
 
 ### 기본 구조
 
