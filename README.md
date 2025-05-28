@@ -37,6 +37,11 @@ SNAPBUG는 **React 애플리케이션**의 **상태 변화**와 **DOM**을 함�
     - [3.3 그래서 CDN + NPM 병행 구조를 선택했습니다.](#33-%EA%B7%B8%EB%9E%98%EC%84%9C-cdn--npm-%EB%B3%91%ED%96%89-%EA%B5%AC%EC%A1%B0%EB%A5%BC-%EC%84%A0%ED%83%9D%ED%96%88%EC%8A%B5%EB%8B%88%EB%8B%A4)
       - [CDN : script 한 줄로 어디서든 동작하는 상태 추적 스크립트](#cdn--script-%ED%95%9C-%EC%A4%84%EB%A1%9C-%EC%96%B4%EB%94%94%EC%84%9C%EB%93%A0-%EB%8F%99%EC%9E%91%ED%95%98%EB%8A%94-%EC%83%81%ED%83%9C-%EC%B6%94%EC%A0%81-%EC%8A%A4%ED%81%AC%EB%A6%BD%ED%8A%B8)
       - [NPM : 프로젝트에 설치하여 CLI 도구로 활용](#npm--%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8%EC%97%90-%EC%84%A4%EC%B9%98%ED%95%98%EC%97%AC-cli-%EB%8F%84%EA%B5%AC%EB%A1%9C-%ED%99%9C%EC%9A%A9)
+  - [4. 명령어 하나로 디버깅 화면을 자동 배포할 수 있을까?](#4-%EB%AA%85%EB%A0%B9%EC%96%B4-%ED%95%98%EB%82%98%EB%A1%9C-%EB%94%94%EB%B2%84%EA%B9%85-%ED%99%94%EB%A9%B4%EC%9D%84-%EC%9E%90%EB%8F%99-%EB%B0%B0%ED%8F%AC%ED%95%A0-%EC%88%98-%EC%9E%88%EC%9D%84%EA%B9%8C)
+    - [4.1. 상태 기록 파일을 확인합니다.](#41-%EC%83%81%ED%83%9C-%EA%B8%B0%EB%A1%9D-%ED%8C%8C%EC%9D%BC%EC%9D%84-%ED%99%95%EC%9D%B8%ED%95%A9%EB%8B%88%EB%8B%A4)
+    - [4.2. 디버깅 UI를 빌드합니다.](#42-%EB%94%94%EB%B2%84%EA%B9%85-ui%EB%A5%BC-%EB%B9%8C%EB%93%9C%ED%95%A9%EB%8B%88%EB%8B%A4)
+    - [4.3. Vercel로 자동 배포합니다.](#43-vercel%EB%A1%9C-%EC%9E%90%EB%8F%99-%EB%B0%B0%ED%8F%AC%ED%95%A9%EB%8B%88%EB%8B%A4)
+    - [4.4 링크 하나로 문제 상황을 그대로 보여줍니다.](#44-%EB%A7%81%ED%81%AC-%ED%95%98%EB%82%98%EB%A1%9C-%EB%AC%B8%EC%A0%9C-%EC%83%81%ED%99%A9%EC%9D%84-%EA%B7%B8%EB%8C%80%EB%A1%9C-%EB%B3%B4%EC%97%AC%EC%A4%8D%EB%8B%88%EB%8B%A4)
 - [Trouble Shooting](#trouble-shooting)
   - [1. React 내부 상태의 순환 참조로 인한 상태 전송 실패를 안전한 상태 필터링으로 해결](#1-react-%EB%82%B4%EB%B6%80-%EC%83%81%ED%83%9C%EC%9D%98-%EC%88%9C%ED%99%98-%EC%B0%B8%EC%A1%B0%EB%A1%9C-%EC%9D%B8%ED%95%9C-%EC%83%81%ED%83%9C-%EC%A0%84%EC%86%A1-%EC%8B%A4%ED%8C%A8%EB%A5%BC-%EC%95%88%EC%A0%84%ED%95%9C-%EC%83%81%ED%83%9C-%ED%95%84%ED%84%B0%EB%A7%81%EC%9C%BC%EB%A1%9C-%ED%95%B4%EA%B2%B0)
     - [원인 : React 상태 구조는 내부적으로 순환 참조를 포함하고 있다.](#%EC%9B%90%EC%9D%B8--react-%EC%83%81%ED%83%9C-%EA%B5%AC%EC%A1%B0%EB%8A%94-%EB%82%B4%EB%B6%80%EC%A0%81%EC%9C%BC%EB%A1%9C-%EC%88%9C%ED%99%98-%EC%B0%B8%EC%A1%B0%EB%A5%BC-%ED%8F%AC%ED%95%A8%ED%95%98%EA%B3%A0-%EC%9E%88%EB%8B%A4)
@@ -315,6 +320,60 @@ npm install snapbug
 
 <br>
 
+## 4. 명령어 하나로 디버깅 화면을 자동 배포할 수 있을까?
+
+디버깅 과정을 가능한 간단하고 직관적으로 만들고 싶었습니다.
+
+복잡한 설정이나 배포 과정을 몰라도 기록된 상태 데이터만 있다면 명령어 하나로 디버깅 UI를 만들고 웹에 자동 배포할 수 있도록 구현했습니다.
+
+```
+npx snapbug run
+```
+
+위 명령어를 입력하면 내부적으로 다음과 같은 과정이 자동으로 실행됩니다.
+
+### 4.1. 상태 기록 파일을 확인합니다.
+
+먼저 `snapbug-state.json` 이라는 파일이 존재하는지 확인합니다.
+
+이 파일은 사용자의 React 프로젝트에서 `snapbug start`로 저장된 상태와 DOM, CSS 정보가 담긴 스냅샷 입니다.
+
+> 이 과정에서 만약 상태를 기록한 파일이 없다면 디버깅 UI를 만들 수 없기 때문에 에러 메시지로 사용자에게 안내합니다.
+
+### 4.2. 디버깅 UI를 빌드합니다.
+
+상태를 기록한 파일이 준비되어 있다면 SnapBug는 내부에 포함된 디버깅 전용 클라이언트(snapbug-client)를 기반으로 UI를 자동으로 구성합니다.
+
+- vite build를 통해 UI를 정적 사이트로 빌드합니다.
+- 상태가 기록된 파일 (snapbug-state.json)을 빌드 결과물 폴더에 복사합니다.
+
+이 과정을 통해 언제든지 해당 상태를 브라우저에서 다시 확인할 수 있는 디버깅 페이지가 만들어집니다.
+
+### 4.3. Vercel로 자동 배포합니다.
+
+완성된 디버깅 UI를 실제로 웹에서 볼 수 있도록 Vercel에 자동으로 배포합니다.
+
+`npx vercel deploy --prod --yes` 명령어로 실제 배포를 진행합니다. 배포가 완료되면 Vercel에서 생성한 URL을 콘솔에 출력합니다.
+
+```
+🎉 배포 완료: https://snapbug-debug-example.vercel.app
+```
+
+이 링크를 공유하면 복잡한 설정 없이 누구나 상태가 저장된 시점의 화면을 그대로 확인할 수 있습니다.
+
+### 4.4 링크 하나로 문제 상황을 그대로 보여줍니다.
+
+이 모든 과정은 SnapBug CLI가 자동으로 처리됩니다. 사용자는 아래 두가지 명령어만 기억하면 됩니다.
+
+1. React 프로젝트에 CDN을 삽입하고 `snapbug start`로 상태 추적을 시작합니다.
+2. `snapbug run`을 실행해 디버깅 UI를 자동 빌드하고 배포합니다.
+
+이 두 줄이면 복잡한 설정 없이 저장된 상태를 웹 페이지로 시각화 한 디버깅 UI를 배포 완료된 링크로 받아볼 수 있습니다.
+
+협업 중 문제 상황을 설명할 때 "어떤 상태에서 오류가 났는지", "그 시점의 화면"이 어떤 모습이 었는지 설명하기 어렵습니다.
+
+명령어 하나로 상태와 화면을 그대로 복원한 페이지를 링크로 공유할 수 있도록 했으며 이 기능을 통해 문제 상황을 빠르게 시각화하고 팀과 원활하게 소통할 수 있도록 하는데 집중했습니다.
+
 # Trouble Shooting
 
 ## 1. React 내부 상태의 순환 참조로 인한 상태 전송 실패를 안전한 상태 필터링으로 해결
@@ -484,7 +543,10 @@ SnapBug는 이 로직을 실제로 다음과 같이 구현하고 있습니다. `
 이후 `npm run dev`로 개발 서버를 실행하면, 브라우저에서 상태 변화와 DOM 구조 변경이 자동으로 기록됩니다.
 
 ```javascript
-<script defer src="https://snap-bug-cdn.vercel.app/stateTracker.v1.iife.js"></script>
+<script
+  defer
+  src="https://snap-bug-cdn.vercel.app/stateTracker.v1.iife.js"
+></script>
 ```
 
 <img src="https://github.com/user-attachments/assets/f0e0c09a-11f0-43b8-9f4f-f8748a84e605" width=300/>
