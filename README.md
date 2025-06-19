@@ -25,7 +25,7 @@ SnapBug는 **React 애플리케이션**의 **상태 변화**와 **DOM**을 함�
   * [1. React 상태 추적 로직은 FiberNode 순회로 구현했습니다.](#1-react-%EC%83%81%ED%83%9C-%EC%B6%94%EC%A0%81-%EB%A1%9C%EC%A7%81%EC%9D%80-fibernode-%EC%88%9C%ED%9A%8C%EB%A1%9C-%EA%B5%AC%ED%98%84%ED%96%88%EC%8A%B5%EB%8B%88%EB%8B%A4)
     + [1.1 상태를 추출하기 위해 FiberNode의 연결 리스트를 순회했습니다.](#11-%EC%83%81%ED%83%9C%EB%A5%BC-%EC%B6%94%EC%B6%9C%ED%95%98%EA%B8%B0-%EC%9C%84%ED%95%B4-fibernode%EC%9D%98-%EC%97%B0%EA%B2%B0-%EB%A6%AC%EC%8A%A4%ED%8A%B8%EB%A5%BC-%EC%88%9C%ED%9A%8C%ED%96%88%EC%8A%B5%EB%8B%88%EB%8B%A4)
     + [1.2 상태 추적을 시작하기 위해 DOM에서 Fiber Root를 찾습니다.](#12-%EC%83%81%ED%83%9C-%EC%B6%94%EC%A0%81%EC%9D%84-%EC%8B%9C%EC%9E%91%ED%95%98%EA%B8%B0-%EC%9C%84%ED%95%B4-dom%EC%97%90%EC%84%9C-fiber-root%EB%A5%BC-%EC%B0%BE%EC%8A%B5%EB%8B%88%EB%8B%A4)
-    + [1.3 상태 변화가 일어나는 memoizedState만 추적 대상으로 선택했습니다..](#13-%EC%83%81%ED%83%9C-%EB%B3%80%ED%99%94%EA%B0%80-%EC%9D%BC%EC%96%B4%EB%82%98%EB%8A%94-memoizedstate%EB%A7%8C-%EC%B6%94%EC%A0%81-%EB%8C%80%EC%83%81%EC%9C%BC%EB%A1%9C-%EC%84%A0%ED%83%9D%ED%96%88%EC%8A%B5%EB%8B%88%EB%8B%A4)
+    + [1.3 상태 변화가 일어나는 memoizedState만 추적 대상으로 선택했습니다.](#13-%EC%83%81%ED%83%9C-%EB%B3%80%ED%99%94%EA%B0%80-%EC%9D%BC%EC%96%B4%EB%82%98%EB%8A%94-memoizedstate%EB%A7%8C-%EC%B6%94%EC%A0%81-%EB%8C%80%EC%83%81%EC%9C%BC%EB%A1%9C-%EC%84%A0%ED%83%9D%ED%96%88%EC%8A%B5%EB%8B%88%EB%8B%A4)
   * [2. 상태 변화 시점마다 DOM과 CSS 스냅샷을 저장합니다.](#2-%EC%83%81%ED%83%9C-%EB%B3%80%ED%99%94-%EC%8B%9C%EC%A0%90%EB%A7%88%EB%8B%A4-dom%EA%B3%BC-css-%EC%8A%A4%EB%83%85%EC%83%B7%EC%9D%84-%EC%A0%80%EC%9E%A5%ED%95%A9%EB%8B%88%EB%8B%A4)
     + [2.1 DOM 변화 감지를 위해 MutationObserver를 사용했습니다.](#21-dom-%EB%B3%80%ED%99%94-%EA%B0%90%EC%A7%80%EB%A5%BC-%EC%9C%84%ED%95%B4-mutationobserver%EB%A5%BC-%EC%82%AC%EC%9A%A9%ED%96%88%EC%8A%B5%EB%8B%88%EB%8B%A4)
     + [2.2 DOM과 CSS를 함께 저장해야 시점별 UI를 정확히 복원할 수 있습니다.](#22-dom%EA%B3%BC-css%EB%A5%BC-%ED%95%A8%EA%BB%98-%EC%A0%80%EC%9E%A5%ED%95%B4%EC%95%BC-%EC%8B%9C%EC%A0%90%EB%B3%84-ui%EB%A5%BC-%EC%A0%95%ED%99%95%ED%9E%88-%EB%B3%B5%EC%9B%90%ED%95%A0-%EC%88%98-%EC%9E%88%EC%8A%B5%EB%8B%88%EB%8B%A4)
@@ -151,7 +151,7 @@ SnapBug는 **React 애플리케이션**의 **상태 변화**와 **DOM**을 함�
 ### 1.2 상태 추적을 시작하기 위해 DOM에서 Fiber Root를 찾습니다.
 
 - `__reactContainer$`를 통해 Fiber 루트에 접근하는 예시
-  
+
 <img src="https://i.ibb.co/84xDzmz1/image.png" alt="image" border="0">
 
 - `__reactFiber$`가 실제 DOM 노드에 붙어 있는 구조
