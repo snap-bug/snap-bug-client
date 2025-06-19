@@ -22,64 +22,64 @@ SnapBug는 **React 애플리케이션**의 **상태 변화**와 **DOM**을 함�
 - [Motivation](#motivation)
 - [Preview](#preview)
 - [Development](#development)
-  - [1. React에서 상태는 어떻게 추적할 수 있을까?](#1-react%EC%97%90%EC%84%9C-%EC%83%81%ED%83%9C%EB%8A%94-%EC%96%B4%EB%96%BB%EA%B2%8C-%EC%B6%94%EC%A0%81%ED%95%A0-%EC%88%98-%EC%9E%88%EC%9D%84%EA%B9%8C)
-    - [1.1 상태는 어디에 저장되어 있을까?](#11-%EC%83%81%ED%83%9C%EB%8A%94-%EC%96%B4%EB%94%94%EC%97%90-%EC%A0%80%EC%9E%A5%EB%90%98%EC%96%B4-%EC%9E%88%EC%9D%84%EA%B9%8C)
-    - [1.2 React 앱의 루트 노드는 어떻게 찾을까?](#12-react-%EC%95%B1%EC%9D%98-%EB%A3%A8%ED%8A%B8-%EB%85%B8%EB%93%9C%EB%8A%94-%EC%96%B4%EB%96%BB%EA%B2%8C-%EC%B0%BE%EC%9D%84%EA%B9%8C)
-    - [1.3 memoizedState만 추적해야하는 이유는 뭘까?](#13-memoizedstate%EB%A7%8C-%EC%B6%94%EC%A0%81%ED%95%B4%EC%95%BC%ED%95%98%EB%8A%94-%EC%9D%B4%EC%9C%A0%EB%8A%94-%EB%AD%98%EA%B9%8C)
-  - [2. UI 시점별 복원을 위한 DOM + CSS 스냅샷 저장](#2-ui-%EC%8B%9C%EC%A0%90%EB%B3%84-%EB%B3%B5%EC%9B%90%EC%9D%84-%EC%9C%84%ED%95%9C-dom--css-%EC%8A%A4%EB%83%85%EC%83%B7-%EC%A0%80%EC%9E%A5)
-    - [2.1 실시간 DOM 변화를 감지하기 위한 MutationObserver 활용](#21-%EC%8B%A4%EC%8B%9C%EA%B0%84-dom-%EB%B3%80%ED%99%94%EB%A5%BC-%EA%B0%90%EC%A7%80%ED%95%98%EA%B8%B0-%EC%9C%84%ED%95%9C-mutationobserver-%ED%99%9C%EC%9A%A9)
-    - [2.2 DOM과 CSS를 함께 저장해야 시점별 UI를 정확히 복원할 수 있다](#22-dom%EA%B3%BC-css%EB%A5%BC-%ED%95%A8%EA%BB%98-%EC%A0%80%EC%9E%A5%ED%95%B4%EC%95%BC-%EC%8B%9C%EC%A0%90%EB%B3%84-ui%EB%A5%BC-%EC%A0%95%ED%99%95%ED%9E%88-%EB%B3%B5%EC%9B%90%ED%95%A0-%EC%88%98-%EC%9E%88%EB%8B%A4)
-  - [3. 왜 CDN + NPM 여야 했을까?](#3-%EC%99%9C-cdn--npm-%EC%97%AC%EC%95%BC-%ED%96%88%EC%9D%84%EA%B9%8C)
-    - [3.1 Puppeteer 방식의 한계](#31-puppeteer-%EB%B0%A9%EC%8B%9D%EC%9D%98-%ED%95%9C%EA%B3%84)
+  * [1. React 상태 추적 로직은 FiberNode 순회로 구현했습니다.](#1-react-%EC%83%81%ED%83%9C-%EC%B6%94%EC%A0%81-%EB%A1%9C%EC%A7%81%EC%9D%80-fibernode-%EC%88%9C%ED%9A%8C%EB%A1%9C-%EA%B5%AC%ED%98%84%ED%96%88%EC%8A%B5%EB%8B%88%EB%8B%A4)
+    + [1.1 상태를 추출하기 위해 FiberNode의 연결 리스트를 순회했습니다.](#11-%EC%83%81%ED%83%9C%EB%A5%BC-%EC%B6%94%EC%B6%9C%ED%95%98%EA%B8%B0-%EC%9C%84%ED%95%B4-fibernode%EC%9D%98-%EC%97%B0%EA%B2%B0-%EB%A6%AC%EC%8A%A4%ED%8A%B8%EB%A5%BC-%EC%88%9C%ED%9A%8C%ED%96%88%EC%8A%B5%EB%8B%88%EB%8B%A4)
+    + [1.2 상태 추적을 시작하기 위해 DOM에서 Fiber Root를 찾습니다.](#12-%EC%83%81%ED%83%9C-%EC%B6%94%EC%A0%81%EC%9D%84-%EC%8B%9C%EC%9E%91%ED%95%98%EA%B8%B0-%EC%9C%84%ED%95%B4-dom%EC%97%90%EC%84%9C-fiber-root%EB%A5%BC-%EC%B0%BE%EC%8A%B5%EB%8B%88%EB%8B%A4)
+    + [1.3 상태 변화가 일어나는 memoizedState만 추적 대상으로 선택했습니다..](#13-%EC%83%81%ED%83%9C-%EB%B3%80%ED%99%94%EA%B0%80-%EC%9D%BC%EC%96%B4%EB%82%98%EB%8A%94-memoizedstate%EB%A7%8C-%EC%B6%94%EC%A0%81-%EB%8C%80%EC%83%81%EC%9C%BC%EB%A1%9C-%EC%84%A0%ED%83%9D%ED%96%88%EC%8A%B5%EB%8B%88%EB%8B%A4)
+  * [2. 상태 변화 시점마다 DOM과 CSS 스냅샷을 저장합니다.](#2-%EC%83%81%ED%83%9C-%EB%B3%80%ED%99%94-%EC%8B%9C%EC%A0%90%EB%A7%88%EB%8B%A4-dom%EA%B3%BC-css-%EC%8A%A4%EB%83%85%EC%83%B7%EC%9D%84-%EC%A0%80%EC%9E%A5%ED%95%A9%EB%8B%88%EB%8B%A4)
+    + [2.1 DOM 변화 감지를 위해 MutationObserver를 사용했습니다.](#21-dom-%EB%B3%80%ED%99%94-%EA%B0%90%EC%A7%80%EB%A5%BC-%EC%9C%84%ED%95%B4-mutationobserver%EB%A5%BC-%EC%82%AC%EC%9A%A9%ED%96%88%EC%8A%B5%EB%8B%88%EB%8B%A4)
+    + [2.2 DOM과 CSS를 함께 저장해야 시점별 UI를 정확히 복원할 수 있습니다.](#22-dom%EA%B3%BC-css%EB%A5%BC-%ED%95%A8%EA%BB%98-%EC%A0%80%EC%9E%A5%ED%95%B4%EC%95%BC-%EC%8B%9C%EC%A0%90%EB%B3%84-ui%EB%A5%BC-%EC%A0%95%ED%99%95%ED%9E%88-%EB%B3%B5%EC%9B%90%ED%95%A0-%EC%88%98-%EC%9E%88%EC%8A%B5%EB%8B%88%EB%8B%A4)
+  * [3. React 상태를 추적하기 위해 브라우저 안에서 직접 실행되도록 구현했습니다.](#3-react-%EC%83%81%ED%83%9C%EB%A5%BC-%EC%B6%94%EC%A0%81%ED%95%98%EA%B8%B0-%EC%9C%84%ED%95%B4-%EB%B8%8C%EB%9D%BC%EC%9A%B0%EC%A0%80-%EC%95%88%EC%97%90%EC%84%9C-%EC%A7%81%EC%A0%91-%EC%8B%A4%ED%96%89%EB%90%98%EB%8F%84%EB%A1%9D-%EA%B5%AC%ED%98%84%ED%96%88%EC%8A%B5%EB%8B%88%EB%8B%A4)
+    + [3.1 Puppeteer 방식은 FiberNode 접근과 CSR 타이밍 이슈로 실패했습니다.](#31-puppeteer-%EB%B0%A9%EC%8B%9D%EC%9D%80-fibernode-%EC%A0%91%EA%B7%BC%EA%B3%BC-csr-%ED%83%80%EC%9D%B4%EB%B0%8D-%EC%9D%B4%EC%8A%88%EB%A1%9C-%EC%8B%A4%ED%8C%A8%ED%96%88%EC%8A%B5%EB%8B%88%EB%8B%A4)
       - [1. FiberNode는 Puppeteer로 접근할 수 없습니다.](#1-fibernode%EB%8A%94-puppeteer%EB%A1%9C-%EC%A0%91%EA%B7%BC%ED%95%A0-%EC%88%98-%EC%97%86%EC%8A%B5%EB%8B%88%EB%8B%A4)
       - [2. CSR 앱에서는 타이밍 문제로 실패합니다.](#2-csr-%EC%95%B1%EC%97%90%EC%84%9C%EB%8A%94-%ED%83%80%EC%9D%B4%EB%B0%8D-%EB%AC%B8%EC%A0%9C%EB%A1%9C-%EC%8B%A4%ED%8C%A8%ED%95%A9%EB%8B%88%EB%8B%A4)
-    - [3.2 외부 API 요청에는 CORS 문제가 있습니다.](#32-%EC%99%B8%EB%B6%80-api-%EC%9A%94%EC%B2%AD%EC%97%90%EB%8A%94-cors-%EB%AC%B8%EC%A0%9C%EA%B0%80-%EC%9E%88%EC%8A%B5%EB%8B%88%EB%8B%A4)
-    - [3.3 그래서 CDN + NPM 병행 구조를 선택했습니다.](#33-%EA%B7%B8%EB%9E%98%EC%84%9C-cdn--npm-%EB%B3%91%ED%96%89-%EA%B5%AC%EC%A1%B0%EB%A5%BC-%EC%84%A0%ED%83%9D%ED%96%88%EC%8A%B5%EB%8B%88%EB%8B%A4)
+    + [3.2 외부 API 전송은 CORS 보안 정책에 막혔습니다.](#32-%EC%99%B8%EB%B6%80-api-%EC%A0%84%EC%86%A1%EC%9D%80-cors-%EB%B3%B4%EC%95%88-%EC%A0%95%EC%B1%85%EC%97%90-%EB%A7%89%ED%98%94%EC%8A%B5%EB%8B%88%EB%8B%A4)
+    + [3.3 브라우저에서 직접 실행 가능한 CDN + NPM 병행 구조를 선택했습니다.](#33-%EB%B8%8C%EB%9D%BC%EC%9A%B0%EC%A0%80%EC%97%90%EC%84%9C-%EC%A7%81%EC%A0%91-%EC%8B%A4%ED%96%89-%EA%B0%80%EB%8A%A5%ED%95%9C-cdn--npm-%EB%B3%91%ED%96%89-%EA%B5%AC%EC%A1%B0%EB%A5%BC-%EC%84%A0%ED%83%9D%ED%96%88%EC%8A%B5%EB%8B%88%EB%8B%A4)
       - [CDN : script 한 줄로 어디서든 동작하는 상태 추적 스크립트](#cdn--script-%ED%95%9C-%EC%A4%84%EB%A1%9C-%EC%96%B4%EB%94%94%EC%84%9C%EB%93%A0-%EB%8F%99%EC%9E%91%ED%95%98%EB%8A%94-%EC%83%81%ED%83%9C-%EC%B6%94%EC%A0%81-%EC%8A%A4%ED%81%AC%EB%A6%BD%ED%8A%B8)
       - [NPM : 프로젝트에 설치하여 CLI 도구로 활용](#npm--%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8%EC%97%90-%EC%84%A4%EC%B9%98%ED%95%98%EC%97%AC-cli-%EB%8F%84%EA%B5%AC%EB%A1%9C-%ED%99%9C%EC%9A%A9)
-  - [4. 명령어 하나로 디버깅 화면을 자동 배포할 수 있을까?](#4-%EB%AA%85%EB%A0%B9%EC%96%B4-%ED%95%98%EB%82%98%EB%A1%9C-%EB%94%94%EB%B2%84%EA%B9%85-%ED%99%94%EB%A9%B4%EC%9D%84-%EC%9E%90%EB%8F%99-%EB%B0%B0%ED%8F%AC%ED%95%A0-%EC%88%98-%EC%9E%88%EC%9D%84%EA%B9%8C)
-    - [4.1. 상태 기록 파일을 확인합니다.](#41-%EC%83%81%ED%83%9C-%EA%B8%B0%EB%A1%9D-%ED%8C%8C%EC%9D%BC%EC%9D%84-%ED%99%95%EC%9D%B8%ED%95%A9%EB%8B%88%EB%8B%A4)
-    - [4.2. 디버깅 UI를 빌드합니다.](#42-%EB%94%94%EB%B2%84%EA%B9%85-ui%EB%A5%BC-%EB%B9%8C%EB%93%9C%ED%95%A9%EB%8B%88%EB%8B%A4)
-    - [4.3. Vercel로 자동 배포합니다.](#43-vercel%EB%A1%9C-%EC%9E%90%EB%8F%99-%EB%B0%B0%ED%8F%AC%ED%95%A9%EB%8B%88%EB%8B%A4)
-    - [4.4 링크 하나로 문제 상황을 그대로 보여줍니다.](#44-%EB%A7%81%ED%81%AC-%ED%95%98%EB%82%98%EB%A1%9C-%EB%AC%B8%EC%A0%9C-%EC%83%81%ED%99%A9%EC%9D%84-%EA%B7%B8%EB%8C%80%EB%A1%9C-%EB%B3%B4%EC%97%AC%EC%A4%8D%EB%8B%88%EB%8B%A4)
+  * [4. 명령어 한 줄로 상태 기반 디버깅 UI를 빌드하고 배포합니다.](#4-%EB%AA%85%EB%A0%B9%EC%96%B4-%ED%95%9C-%EC%A4%84%EB%A1%9C-%EC%83%81%ED%83%9C-%EA%B8%B0%EB%B0%98-%EB%94%94%EB%B2%84%EA%B9%85-ui%EB%A5%BC-%EB%B9%8C%EB%93%9C%ED%95%98%EA%B3%A0-%EB%B0%B0%ED%8F%AC%ED%95%A9%EB%8B%88%EB%8B%A4)
+    + [4.1. 상태 기록 파일을 확인합니다.](#41-%EC%83%81%ED%83%9C-%EA%B8%B0%EB%A1%9D-%ED%8C%8C%EC%9D%BC%EC%9D%84-%ED%99%95%EC%9D%B8%ED%95%A9%EB%8B%88%EB%8B%A4)
+    + [4.2. 디버깅 UI를 빌드합니다.](#42-%EB%94%94%EB%B2%84%EA%B9%85-ui%EB%A5%BC-%EB%B9%8C%EB%93%9C%ED%95%A9%EB%8B%88%EB%8B%A4)
+    + [4.3. Vercel로 자동 배포합니다.](#43-vercel%EB%A1%9C-%EC%9E%90%EB%8F%99-%EB%B0%B0%ED%8F%AC%ED%95%A9%EB%8B%88%EB%8B%A4)
+    + [4.4 링크 하나로 문제 상황을 그대로 보여줍니다.](#44-%EB%A7%81%ED%81%AC-%ED%95%98%EB%82%98%EB%A1%9C-%EB%AC%B8%EC%A0%9C-%EC%83%81%ED%99%A9%EC%9D%84-%EA%B7%B8%EB%8C%80%EB%A1%9C-%EB%B3%B4%EC%97%AC%EC%A4%8D%EB%8B%88%EB%8B%A4)
 - [Trouble Shooting](#trouble-shooting)
-  - [1. React 내부 상태의 순환 참조로 인한 상태 전송 실패를 안전한 상태 필터링으로 해결](#1-react-%EB%82%B4%EB%B6%80-%EC%83%81%ED%83%9C%EC%9D%98-%EC%88%9C%ED%99%98-%EC%B0%B8%EC%A1%B0%EB%A1%9C-%EC%9D%B8%ED%95%9C-%EC%83%81%ED%83%9C-%EC%A0%84%EC%86%A1-%EC%8B%A4%ED%8C%A8%EB%A5%BC-%EC%95%88%EC%A0%84%ED%95%9C-%EC%83%81%ED%83%9C-%ED%95%84%ED%84%B0%EB%A7%81%EC%9C%BC%EB%A1%9C-%ED%95%B4%EA%B2%B0)
-    - [원인 : React 상태 구조는 내부적으로 순환 참조를 포함하고 있다.](#%EC%9B%90%EC%9D%B8--react-%EC%83%81%ED%83%9C-%EA%B5%AC%EC%A1%B0%EB%8A%94-%EB%82%B4%EB%B6%80%EC%A0%81%EC%9C%BC%EB%A1%9C-%EC%88%9C%ED%99%98-%EC%B0%B8%EC%A1%B0%EB%A5%BC-%ED%8F%AC%ED%95%A8%ED%95%98%EA%B3%A0-%EC%9E%88%EB%8B%A4)
-    - [해결 : 순환 참조를 막는 안전한 상태 필터링을 하자.](#%ED%95%B4%EA%B2%B0--%EC%88%9C%ED%99%98-%EC%B0%B8%EC%A1%B0%EB%A5%BC-%EB%A7%89%EB%8A%94-%EC%95%88%EC%A0%84%ED%95%9C-%EC%83%81%ED%83%9C-%ED%95%84%ED%84%B0%EB%A7%81%EC%9D%84-%ED%95%98%EC%9E%90)
+  * [1. React 상태를 JSON으로 안전하게 저장하기 위해 순환 참조를 제거했습니다.](#1-react-%EC%83%81%ED%83%9C%EB%A5%BC-json%EC%9C%BC%EB%A1%9C-%EC%95%88%EC%A0%84%ED%95%98%EA%B2%8C-%EC%A0%80%EC%9E%A5%ED%95%98%EA%B8%B0-%EC%9C%84%ED%95%B4-%EC%88%9C%ED%99%98-%EC%B0%B8%EC%A1%B0%EB%A5%BC-%EC%A0%9C%EA%B1%B0%ED%96%88%EC%8A%B5%EB%8B%88%EB%8B%A4)
+    + [원인 : React 상태를 저장하려 했지만 순환 참조 때문에 직렬화 오류가 발생했습니다.](#%EC%9B%90%EC%9D%B8--react-%EC%83%81%ED%83%9C%EB%A5%BC-%EC%A0%80%EC%9E%A5%ED%95%98%EB%A0%A4-%ED%96%88%EC%A7%80%EB%A7%8C-%EC%88%9C%ED%99%98-%EC%B0%B8%EC%A1%B0-%EB%95%8C%EB%AC%B8%EC%97%90-%EC%A7%81%EB%A0%AC%ED%99%94-%EC%98%A4%EB%A5%98%EA%B0%80-%EB%B0%9C%EC%83%9D%ED%96%88%EC%8A%B5%EB%8B%88%EB%8B%A4)
+    + [해결 : 상태 저장 오류를 막기 위해 내부 참조 속성을 필터링했습니다.](#%ED%95%B4%EA%B2%B0--%EC%83%81%ED%83%9C-%EC%A0%80%EC%9E%A5-%EC%98%A4%EB%A5%98%EB%A5%BC-%EB%A7%89%EA%B8%B0-%EC%9C%84%ED%95%B4-%EB%82%B4%EB%B6%80-%EC%B0%B8%EC%A1%B0-%EC%86%8D%EC%84%B1%EC%9D%84-%ED%95%84%ED%84%B0%EB%A7%81%ED%96%88%EC%8A%B5%EB%8B%88%EB%8B%A4)
       - [내부에서 사용되는 구조적 속성은 JSON 변환 대상에서 제외했습니다.](#%EB%82%B4%EB%B6%80%EC%97%90%EC%84%9C-%EC%82%AC%EC%9A%A9%EB%90%98%EB%8A%94-%EA%B5%AC%EC%A1%B0%EC%A0%81-%EC%86%8D%EC%84%B1%EC%9D%80-json-%EB%B3%80%ED%99%98-%EB%8C%80%EC%83%81%EC%97%90%EC%84%9C-%EC%A0%9C%EC%99%B8%ED%96%88%EC%8A%B5%EB%8B%88%EB%8B%A4)
-  - [2. Fiber 트리를 제대로 순회하지 않아 일부 상태가 누락되던 문제](#2-fiber-%ED%8A%B8%EB%A6%AC%EB%A5%BC-%EC%A0%9C%EB%8C%80%EB%A1%9C-%EC%88%9C%ED%9A%8C%ED%95%98%EC%A7%80-%EC%95%8A%EC%95%84-%EC%9D%BC%EB%B6%80-%EC%83%81%ED%83%9C%EA%B0%80-%EB%88%84%EB%9D%BD%EB%90%98%EB%8D%98-%EB%AC%B8%EC%A0%9C)
-    - [원인 : Fiber 트리를 자식 노드만 따라가서 형제 노드는 누락됨](#%EC%9B%90%EC%9D%B8--fiber-%ED%8A%B8%EB%A6%AC%EB%A5%BC-%EC%9E%90%EC%8B%9D-%EB%85%B8%EB%93%9C%EB%A7%8C-%EB%94%B0%EB%9D%BC%EA%B0%80%EC%84%9C-%ED%98%95%EC%A0%9C-%EB%85%B8%EB%93%9C%EB%8A%94-%EB%88%84%EB%9D%BD%EB%90%A8)
-    - [해결 : 전체 트리를 누락 없이 순회하도록 DFS 방식으로 변경](#%ED%95%B4%EA%B2%B0--%EC%A0%84%EC%B2%B4-%ED%8A%B8%EB%A6%AC%EB%A5%BC-%EB%88%84%EB%9D%BD-%EC%97%86%EC%9D%B4-%EC%88%9C%ED%9A%8C%ED%95%98%EB%8F%84%EB%A1%9D-dfs-%EB%B0%A9%EC%8B%9D%EC%9C%BC%EB%A1%9C-%EB%B3%80%EA%B2%BD)
-    - [결과 : 컴포넌트의 상태가 빠짐없이 전부 수집됨](#%EA%B2%B0%EA%B3%BC--%EC%BB%B4%ED%8F%AC%EB%84%8C%ED%8A%B8%EC%9D%98-%EC%83%81%ED%83%9C%EA%B0%80-%EB%B9%A0%EC%A7%90%EC%97%86%EC%9D%B4-%EC%A0%84%EB%B6%80-%EC%88%98%EC%A7%91%EB%90%A8)
-  - [3. 변화가 없는데도 계속 저장된다.](#3-%EB%B3%80%ED%99%94%EA%B0%80-%EC%97%86%EB%8A%94%EB%8D%B0%EB%8F%84-%EA%B3%84%EC%86%8D-%EC%A0%80%EC%9E%A5%EB%90%9C%EB%8B%A4)
-    - [문제: DOM이 변하지 않았는데도 매번 전체 DOM과 스타일이 저장됨](#%EB%AC%B8%EC%A0%9C-dom%EC%9D%B4-%EB%B3%80%ED%95%98%EC%A7%80-%EC%95%8A%EC%95%98%EB%8A%94%EB%8D%B0%EB%8F%84-%EB%A7%A4%EB%B2%88-%EC%A0%84%EC%B2%B4-dom%EA%B3%BC-%EC%8A%A4%ED%83%80%EC%9D%BC%EC%9D%B4-%EC%A0%80%EC%9E%A5%EB%90%A8)
-    - [해결 : DOM의 해시값을 비교해 변화가 있는 시점에만 저장하는 구조로 전환](#%ED%95%B4%EA%B2%B0--dom%EC%9D%98-%ED%95%B4%EC%8B%9C%EA%B0%92%EC%9D%84-%EB%B9%84%EA%B5%90%ED%95%B4-%EB%B3%80%ED%99%94%EA%B0%80-%EC%9E%88%EB%8A%94-%EC%8B%9C%EC%A0%90%EC%97%90%EB%A7%8C-%EC%A0%80%EC%9E%A5%ED%95%98%EB%8A%94-%EA%B5%AC%EC%A1%B0%EB%A1%9C-%EC%A0%84%ED%99%98)
-    - [결과 : 화면에 실질적인 변화가 감지된 시점만 기록하는 구조로 최적화](#%EA%B2%B0%EA%B3%BC--%ED%99%94%EB%A9%B4%EC%97%90-%EC%8B%A4%EC%A7%88%EC%A0%81%EC%9D%B8-%EB%B3%80%ED%99%94%EA%B0%80-%EA%B0%90%EC%A7%80%EB%90%9C-%EC%8B%9C%EC%A0%90%EB%A7%8C-%EA%B8%B0%EB%A1%9D%ED%95%98%EB%8A%94-%EA%B5%AC%EC%A1%B0%EB%A1%9C-%EC%B5%9C%EC%A0%81%ED%99%94)
+  * [2. React 모든 상태를 빠짐없이 수집하려면 Fiber 트리를 전체 순회해야 했습니다.](#2-react-%EB%AA%A8%EB%93%A0-%EC%83%81%ED%83%9C%EB%A5%BC-%EB%B9%A0%EC%A7%90%EC%97%86%EC%9D%B4-%EC%88%98%EC%A7%91%ED%95%98%EB%A0%A4%EB%A9%B4-fiber-%ED%8A%B8%EB%A6%AC%EB%A5%BC-%EC%A0%84%EC%B2%B4-%EC%88%9C%ED%9A%8C%ED%95%B4%EC%95%BC-%ED%96%88%EC%8A%B5%EB%8B%88%EB%8B%A4)
+    + [원인 : 형제 노드를 탐색하지 않아 일부 상태가 누락되었습니다.](#%EC%9B%90%EC%9D%B8--%ED%98%95%EC%A0%9C-%EB%85%B8%EB%93%9C%EB%A5%BC-%ED%83%90%EC%83%89%ED%95%98%EC%A7%80-%EC%95%8A%EC%95%84-%EC%9D%BC%EB%B6%80-%EC%83%81%ED%83%9C%EA%B0%80-%EB%88%84%EB%9D%BD%EB%90%98%EC%97%88%EC%8A%B5%EB%8B%88%EB%8B%A4)
+    + [해결 : React 트리 전체를 순회하도록 DFS 구조로 개선했습니다.](#%ED%95%B4%EA%B2%B0--react-%ED%8A%B8%EB%A6%AC-%EC%A0%84%EC%B2%B4%EB%A5%BC-%EC%88%9C%ED%9A%8C%ED%95%98%EB%8F%84%EB%A1%9D-dfs-%EA%B5%AC%EC%A1%B0%EB%A1%9C-%EA%B0%9C%EC%84%A0%ED%96%88%EC%8A%B5%EB%8B%88%EB%8B%A4)
+    + [결과 : 누락 없이 React 전체 상태를 기록할 수 있게 됐습니다.](#%EA%B2%B0%EA%B3%BC--%EB%88%84%EB%9D%BD-%EC%97%86%EC%9D%B4-react-%EC%A0%84%EC%B2%B4-%EC%83%81%ED%83%9C%EB%A5%BC-%EA%B8%B0%EB%A1%9D%ED%95%A0-%EC%88%98-%EC%9E%88%EA%B2%8C-%EB%90%90%EC%8A%B5%EB%8B%88%EB%8B%A4)
+  * [3. DOM이 바뀐 시점에만 저장되도록 최적화했습니다.](#3-dom%EC%9D%B4-%EB%B0%94%EB%80%90-%EC%8B%9C%EC%A0%90%EC%97%90%EB%A7%8C-%EC%A0%80%EC%9E%A5%EB%90%98%EB%8F%84%EB%A1%9D-%EC%B5%9C%EC%A0%81%ED%99%94%ED%96%88%EC%8A%B5%EB%8B%88%EB%8B%A4)
+    + [문제: 화면이 바뀌지 않아도 DOM과 스타일을 반복 저장하고 있었습니다.](#%EB%AC%B8%EC%A0%9C-%ED%99%94%EB%A9%B4%EC%9D%B4-%EB%B0%94%EB%80%8C%EC%A7%80-%EC%95%8A%EC%95%84%EB%8F%84-dom%EA%B3%BC-%EC%8A%A4%ED%83%80%EC%9D%BC%EC%9D%84-%EB%B0%98%EB%B3%B5-%EC%A0%80%EC%9E%A5%ED%95%98%EA%B3%A0-%EC%9E%88%EC%97%88%EC%8A%B5%EB%8B%88%EB%8B%A4)
+    + [해결 : DOM 해시값을 비교해 실제 변화가 있는 시점에만 저장하도록 개선했습니다.](#%ED%95%B4%EA%B2%B0--dom-%ED%95%B4%EC%8B%9C%EA%B0%92%EC%9D%84-%EB%B9%84%EA%B5%90%ED%95%B4-%EC%8B%A4%EC%A0%9C-%EB%B3%80%ED%99%94%EA%B0%80-%EC%9E%88%EB%8A%94-%EC%8B%9C%EC%A0%90%EC%97%90%EB%A7%8C-%EC%A0%80%EC%9E%A5%ED%95%98%EB%8F%84%EB%A1%9D-%EA%B0%9C%EC%84%A0%ED%96%88%EC%8A%B5%EB%8B%88%EB%8B%A4)
+    + [결과 : 불필요한 중복 저장 없이 필요한 시점만 기록되도록 최적화되었습니다.](#%EA%B2%B0%EA%B3%BC--%EB%B6%88%ED%95%84%EC%9A%94%ED%95%9C-%EC%A4%91%EB%B3%B5-%EC%A0%80%EC%9E%A5-%EC%97%86%EC%9D%B4-%ED%95%84%EC%9A%94%ED%95%9C-%EC%8B%9C%EC%A0%90%EB%A7%8C-%EA%B8%B0%EB%A1%9D%EB%90%98%EB%8F%84%EB%A1%9D-%EC%B5%9C%EC%A0%81%ED%99%94%EB%90%98%EC%97%88%EC%8A%B5%EB%8B%88%EB%8B%A4)
 - [User Experience](#user-experience)
-  - [1. 상태 추적 스크립트 삽입](#1-%EC%83%81%ED%83%9C-%EC%B6%94%EC%A0%81-%EC%8A%A4%ED%81%AC%EB%A6%BD%ED%8A%B8-%EC%82%BD%EC%9E%85)
-  - [2. 상태 및 UI 변화 저장](#2-%EC%83%81%ED%83%9C-%EB%B0%8F-ui-%EB%B3%80%ED%99%94-%EC%A0%80%EC%9E%A5)
-  - [3. 배포 및 UI 복원 화면](#3-%EB%B0%B0%ED%8F%AC-%EB%B0%8F-ui-%EB%B3%B5%EC%9B%90-%ED%99%94%EB%A9%B4)
-  - [4. 브라우저에서 상태 히스토리 확인](#4-%EB%B8%8C%EB%9D%BC%EC%9A%B0%EC%A0%80%EC%97%90%EC%84%9C-%EC%83%81%ED%83%9C-%ED%9E%88%EC%8A%A4%ED%86%A0%EB%A6%AC-%ED%99%95%EC%9D%B8)
+  * [1. 상태 추적 스크립트 삽입](#1-%EC%83%81%ED%83%9C-%EC%B6%94%EC%A0%81-%EC%8A%A4%ED%81%AC%EB%A6%BD%ED%8A%B8-%EC%82%BD%EC%9E%85)
+  * [2. 상태 및 UI 변화 저장](#2-%EC%83%81%ED%83%9C-%EB%B0%8F-ui-%EB%B3%80%ED%99%94-%EC%A0%80%EC%9E%A5)
+  * [3. 배포 및 UI 복원 화면](#3-%EB%B0%B0%ED%8F%AC-%EB%B0%8F-ui-%EB%B3%B5%EC%9B%90-%ED%99%94%EB%A9%B4)
+  * [4. 브라우저에서 상태 히스토리 확인](#4-%EB%B8%8C%EB%9D%BC%EC%9A%B0%EC%A0%80%EC%97%90%EC%84%9C-%EC%83%81%ED%83%9C-%ED%9E%88%EC%8A%A4%ED%86%A0%EB%A6%AC-%ED%99%95%EC%9D%B8)
 - [Tech stack](#tech-stack)
-  - [개발 환경](#%EA%B0%9C%EB%B0%9C-%ED%99%98%EA%B2%BD)
-  - [1. 프론트엔드 - React + Vite](#1-%ED%94%84%EB%A1%A0%ED%8A%B8%EC%97%94%EB%93%9C---react--vite)
-  - [2. CLI - commander.js](#2-cli---commanderjs)
-  - [3. 브라우저 접근 - CDN](#3-%EB%B8%8C%EB%9D%BC%EC%9A%B0%EC%A0%80-%EC%A0%91%EA%B7%BC---cdn)
-  - [4. 배포 - Vercel](#4-%EB%B0%B0%ED%8F%AC---vercel)
+  * [개발 환경](#%EA%B0%9C%EB%B0%9C-%ED%99%98%EA%B2%BD)
+  * [1. 프론트엔드 - React + Vite](#1-%ED%94%84%EB%A1%A0%ED%8A%B8%EC%97%94%EB%93%9C---react--vite)
+  * [2. CLI - commander.js](#2-cli---commanderjs)
+  * [3. 브라우저 접근 - CDN](#3-%EB%B8%8C%EB%9D%BC%EC%9A%B0%EC%A0%80-%EC%A0%91%EA%B7%BC---cdn)
+  * [4. 배포 - Vercel](#4-%EB%B0%B0%ED%8F%AC---vercel)
 - [Workflow](#workflow)
-  - [Git 브랜치 전략](#git-%EB%B8%8C%EB%9E%9C%EC%B9%98-%EC%A0%84%EB%9E%B5)
-  - [코드 작성 & 리뷰 방식](#%EC%BD%94%EB%93%9C-%EC%9E%91%EC%84%B1--%EB%A6%AC%EB%B7%B0-%EB%B0%A9%EC%8B%9D)
-    - [PR & 이슈 기반 협업 사이클](#pr--%EC%9D%B4%EC%8A%88-%EA%B8%B0%EB%B0%98-%ED%98%91%EC%97%85-%EC%82%AC%EC%9D%B4%ED%81%B4)
-    - [PR 템플릿 기반 커뮤니케이션](#pr-%ED%85%9C%ED%94%8C%EB%A6%BF-%EA%B8%B0%EB%B0%98-%EC%BB%A4%EB%AE%A4%EB%8B%88%EC%BC%80%EC%9D%B4%EC%85%98)
-    - [코드 리뷰 가이드라인](#%EC%BD%94%EB%93%9C-%EB%A6%AC%EB%B7%B0-%EA%B0%80%EC%9D%B4%EB%93%9C%EB%9D%BC%EC%9D%B8)
-    - [기본 구조](#%EA%B8%B0%EB%B3%B8-%EA%B5%AC%EC%A1%B0)
-    - [커밋 타입](#%EC%BB%A4%EB%B0%8B-%ED%83%80%EC%9E%85)
-  - [작업 방식](#%EC%9E%91%EC%97%85-%EB%B0%A9%EC%8B%9D)
-    - [깃허브 칸반 보드](#%EA%B9%83%ED%97%88%EB%B8%8C-%EC%B9%B8%EB%B0%98-%EB%B3%B4%EB%93%9C)
-    - [기록으로 소통의 공백을 채우다](#%EA%B8%B0%EB%A1%9D%EC%9C%BC%EB%A1%9C-%EC%86%8C%ED%86%B5%EC%9D%98-%EA%B3%B5%EB%B0%B1%EC%9D%84-%EC%B1%84%EC%9A%B0%EB%8B%A4)
+  * [Git 브랜치 전략](#git-%EB%B8%8C%EB%9E%9C%EC%B9%98-%EC%A0%84%EB%9E%B5)
+  * [코드 작성 & 리뷰 방식](#%EC%BD%94%EB%93%9C-%EC%9E%91%EC%84%B1--%EB%A6%AC%EB%B7%B0-%EB%B0%A9%EC%8B%9D)
+    + [PR & 이슈 기반 협업 사이클](#pr--%EC%9D%B4%EC%8A%88-%EA%B8%B0%EB%B0%98-%ED%98%91%EC%97%85-%EC%82%AC%EC%9D%B4%ED%81%B4)
+    + [PR 템플릿 기반 커뮤니케이션](#pr-%ED%85%9C%ED%94%8C%EB%A6%BF-%EA%B8%B0%EB%B0%98-%EC%BB%A4%EB%AE%A4%EB%8B%88%EC%BC%80%EC%9D%B4%EC%85%98)
+    + [코드 리뷰 가이드라인](#%EC%BD%94%EB%93%9C-%EB%A6%AC%EB%B7%B0-%EA%B0%80%EC%9D%B4%EB%93%9C%EB%9D%BC%EC%9D%B8)
+    + [기본 구조](#%EA%B8%B0%EB%B3%B8-%EA%B5%AC%EC%A1%B0)
+    + [커밋 타입](#%EC%BB%A4%EB%B0%8B-%ED%83%80%EC%9E%85)
+  * [작업 방식](#%EC%9E%91%EC%97%85-%EB%B0%A9%EC%8B%9D)
+    + [깃허브 칸반 보드](#%EA%B9%83%ED%97%88%EB%B8%8C-%EC%B9%B8%EB%B0%98-%EB%B3%B4%EB%93%9C)
+    + [기록으로 소통의 공백을 채우다](#%EA%B8%B0%EB%A1%9D%EC%9C%BC%EB%A1%9C-%EC%86%8C%ED%86%B5%EC%9D%98-%EA%B3%B5%EB%B0%B1%EC%9D%84-%EC%B1%84%EC%9A%B0%EB%8B%A4)
 - [Retrospective](#retrospective)
-  - [정도원](#%EC%A0%95%EB%8F%84%EC%9B%90)
-  - [이세경](#%EC%9D%B4%EC%84%B8%EA%B2%BD)
+    + [정도원](#%EC%A0%95%EB%8F%84%EC%9B%90)
+    + [이세경](#%EC%9D%B4%EC%84%B8%EA%B2%BD)
 
 <!-- tocstop -->
 
@@ -108,43 +108,55 @@ SnapBug는 **React 애플리케이션**의 **상태 변화**와 **DOM**을 함�
 
 # Preview
 
-- **SnapBug 설치 및 상태 추적 스크립트 연결**
+<details>
+<summary><strong>SnapBug 설치 및 상태 추적 스크립트 연결</strong></summary>
 
-  <img src="https://github.com/user-attachments/assets/565063e3-c63c-4072-b9e5-686accf36129" alt="snapbug환경설정" />
+<img src="https://github.com/user-attachments/assets/565063e3-c63c-4072-b9e5-686accf36129" alt="snapbug환경설정" />
 
-- **SnapBug 배포**
+</details>
 
-  <img src="https://github.com/user-attachments/assets/07ea6c9c-a51d-4fc5-8c7e-f24f61dee12f" alt="snapbug배포" />
+<details>
+<summary><strong>SnapBug 배포</strong></summary>
 
-- **배포된 SnapBug 페이지**
+<img src="https://github.com/user-attachments/assets/07ea6c9c-a51d-4fc5-8c7e-f24f61dee12f" alt="snapbug배포" />
 
-  <img src="https://github.com/user-attachments/assets/92657150-0620-47db-b0f2-0e9e5814d9aa" alt="snapbug페이지" />
+</details>
 
-<br>
+<details>
+<summary><strong>배포된 SnapBug 페이지</strong></summary>
+
+<img src="https://github.com/user-attachments/assets/92657150-0620-47db-b0f2-0e9e5814d9aa" alt="snapbug페이지" />
+
+</details>
 
 # Development
 
-## 1. React에서 상태는 어떻게 추적할 수 있을까?
+## 1. React 상태 추적 로직은 FiberNode 순회로 구현했습니다.
 
 **React의 상태는 FiberNode라는 내부 구조에 저장됩니다.** 저희는 상태 추적을 위해 React의 Fiber 구조를 직접 탐색하는 방식을 택했습니다.
 상태를 추적하기 위해서는 먼저 React 앱의 최상위 루트 노드(Fiber Root) 를 찾고 그 아래에 있는 각 컴포넌트들의 상태를 하나하나 순회하면서 기록해야 했습니다.
 
-### 1.1 상태는 어디에 저장되어 있을까?
+### 1.1 상태를 추출하기 위해 FiberNode의 연결 리스트를 순회했습니다.
 
-React에서는 각 컴포넌트를 FiberNode라는 구조로 관리합니다. 이 구조 안에는 다양한 정보가 들어있었습니다.
+이 구조 안에는 다음과 같은 상태 정보가 담겨 있습니다.
 
-- `memoizedState` : 현재 컴포넌트에서 사용하는 상태
+- `memoizedState` : 현재 컴포넌트에서 사용하는 상태값
 - `memoizedProps` : 부모 컴포넌트로부터 받은 props
 - `child` : 자식 컴포넌트
 - `sibling` : 형제 컴포넌트
 - `return` : 부모 컴포넌트
 
-이 중에서 memoizedState는 상태 값들이 연결 리스트 형태로 저장되어 있어서 순회하면서 상태를 꺼낼 수 있었습니다.
+이 중에서 **memoizedState는 상태 값들이 연결 리스트 형태로 저장되어 있어서 순회하면서 상태를 꺼낼 수 있었습니다.**
 
-### 1.2 React 앱의 루트 노드는 어떻게 찾을까?
+### 1.2 상태 추적을 시작하기 위해 DOM에서 Fiber Root를 찾습니다.
+
+- `__reactContainer$`를 통해 Fiber 루트에 접근하는 예시
+  
+<img src="https://i.ibb.co/84xDzmz1/image.png" alt="image" border="0">
+
+- `__reactFiber$`가 실제 DOM 노드에 붙어 있는 구조
 
 <img src="https://i.ibb.co/PGSTsVMP/image-1.png" alt="image-1" border="0">
-<img src="https://i.ibb.co/84xDzmz1/image.png" alt="image" border="0">
 
 React 앱이 실제로 렌더링되면 React는 내부적으로 DOM 요소에 `__reactFiber$`또는 `__reactContainer$`라는 이름의 속성을 붙입니다. 이 키를 활용해 React가 관리하는 컴포넌트를 찾을 수 있었습니다.
 <br>
@@ -173,10 +185,10 @@ const getFiberRoot = () => {
 
 이렇게 찾은 Fiber Root에서부터 컴포넌트 트리를 따라 내려가며 각 컴포넌트의 상태를 추적할 수 있었습니다.
 
-### 1.3 memoizedState만 추적해야하는 이유는 뭘까?
+### 1.3 상태 변화가 일어나는 memoizedState만 추적 대상으로 선택했습니다.
 
 React에서 진짜 상태 변화는 `memoizedState`에서만 발생하기 때문입니다. <br>
-React 컴포넌트는 두 가지 데이터를 가지고 있는데 하나는 컴포넌트 내부에서 생성한 상태이고, 다른 하나는 부모에게서 전달받은 데이터(Props) 입니다. <br>
+React 컴포넌트는 두 가지 데이터를 가지고 있는데 하나는 컴포넌트 내부에서 생성한 상태이고 다른 하나는 부모에게서 전달받은 데이터(Props) 입니다. <br>
 
 <img src="https://i.ibb.co/XZyMz6d8/image-2.png" alt="image-2" border="0">
 
@@ -184,14 +196,19 @@ React 컴포넌트는 두 가지 데이터를 가지고 있는데 하나는 컴�
 
 - `memoizedState` : 컴포넌트가 useState와 같이 자신만의 상태를 가지고 있을 때 저장됩니다.
 - `memoizedProps` : 컴포넌트가 Props와 같이 부모로부터 받은 값을 저장합니다.
-  <br>
-  React에서 문제를 정확히 추적하려면 직접 상태를 갖고 있는 컴포넌트를 중심으로 봐야 합니다.<br>
-  memoizedProps는 그 자체로는 상태를 변화시키지 않고, 상위 컴포넌트의 영향을 받는 수동적인 데이터이기 때문입니다.<br>
-  결론적으로 `memoizedState`를 기준으로 추적 범위를 제한함으로써 화면 변화에 직접 영향을 주는 핵심 상태만 기록했습니다. 이렇게 하면 불필요한 정보는 제외하고 디버깅에 실질적으로 도움이 되는 상태 변화만 명확하게 확인할 수 있습니다.
+
+React에서 어떤 문제가 발생했는지 정확히 추적하려면 그 컴포넌트가 실제로 갖고 있는 상태 값을 살펴봐야 합니다.
+
+`memoizedProps`는 부모 컴포넌트에서 받은 값일 뿐이고 해당 컴포넌트가 직접 바꾸는 값이 아닙니다. 그래서 이 값이 바뀐다고 해도 실제로 이 컴포넌트가 어떤 상태를 갖고 있는지 또는 어떤 동작을 했는지는 알 수 없습니다.<br>
+
+반대로 `memoizedState`는 `useState`, `useReducer` 등으로 컴포넌트 내부에서 만든 값들이 저장되어 있습니다.<br>
+버튼 클릭, 입력값 변경, 체크박스 선택 같은 사용자 동작이 반영되는 곳은 모두 `memoizedState`입니다.
+
+결론적으로 `memoizedState`만 추적 대상에 포함시켜 실제 상태 변화가 발생한 컴포넌트만 기록했습니다. 이렇게 하면 불필요한 정보는 제외하고 디버깅에 실질적으로 도움이 되는 상태 변화만 명확하게 확인할 수 있습니다.
 
 <br>
 
-## 2. UI 시점별 복원을 위한 DOM + CSS 스냅샷 저장
+## 2. 상태 변화 시점마다 DOM과 CSS 스냅샷을 저장합니다.
 
 SnapBug는 **상태 변화에 따라 실제 어떤 UI가 렌더링되었는지를 시각적으로 확인할 수 있도록** DOM과 CSS까지 함께 저장합니다.<br>
 단순히 React 상태만 기록해서는 사용자가 실제로 본 화면의 전체 맥락을 파악하기 어렵기 때문입니다.
@@ -203,7 +220,7 @@ SnapBug는 이를 보완하기 위해 **React 상태와 함께 해당 시점의 
 이렇게 저장된 정보는 SnapBug 클라이언트에서 타임라인 형태로 시각화되며
 각 시점마다 “그때 실제로 어떤 UI가 사용자에게 보여졌는가”를 정확히 복원할 수 있도록 합니다.
 
-### 2.1 실시간 DOM 변화를 감지하기 위한 MutationObserver 활용
+### 2.1 DOM 변화 감지를 위해 MutationObserver를 사용했습니다.
 
 SnapBug는 MutationObserver를 통해 사용자가 눈으로 보는 화면 변화와 React 상태를 정확히 동기화합니다.<br>
 React 상태만 기록하면 UI 구조 변화(모달 등장, 에러 메시지 출력 등)를 포착할 수 없었습니다. 이를 해결하기 위해 DOM의 변화를 실시간으로 감지해 DOM과 스타일을 함께 저장하도록 구성했습니다.
@@ -239,7 +256,7 @@ observer.observe(rootEl, {
 3. DOM이 이전과 달라졌는지 판단합니다.
 4. 변화가 있으면 상태, DOM, 스타일을 서버로 전송합니다.
 
-### 2.2 DOM과 CSS를 함께 저장해야 시점별 UI를 정확히 복원할 수 있다
+### 2.2 DOM과 CSS를 함께 저장해야 시점별 UI를 정확히 복원할 수 있습니다.
 
 상태 정보만으로는 사용자가 실제로 본 UI를 복원할 수 없습니다.<br>
 SnapBug는 디버깅 도구이자 UI 타임라인 뷰어입니다. 단순한 상태 변화 기록이 아닌 “그 상태에서 어떤 화면이 실제로 렌더링되었는가”를 함께 저장하고자 합니다.
@@ -254,13 +271,13 @@ SnapBug는 디버깅 도구이자 UI 타임라인 뷰어입니다. 단순한 상
 
 <br>
 
-## 3. 왜 CDN + NPM 여야 했을까?
+## 3. React 상태를 추적하기 위해 브라우저 안에서 직접 실행되도록 구현했습니다.
 
 React의 상태는 브라우저 메모리 내부에만 존재하므로, 외부 툴(Puppeteer 등)로는 접근이 어렵습니다. 따라서 상태를 정확히 추적하려면 React 앱이 실행되는 브라우저 내부에서 직접 실행되는 방식이 필요했습니다.
-초기에는 Puppeteer를 통해 React 상태를 수집하려 했지만, 실제 구현 과정에서 세 가지 큰 제약을 마주했고 이를 해결하기 위해 CDN + NPM 병행 배포 방식을 채택하게 되었습니다.
+초기에는 Puppeteer를 통해 React 상태를 수집하려 했지만 실제 구현 과정에서 세 가지 큰 제약을 마주했고 이를 해결하기 위해 CDN + NPM 병행 배포 방식을 채택하게 되었습니다.
 <br>
 
-### 3.1 Puppeteer 방식의 한계
+### 3.1 Puppeteer 방식은 FiberNode 접근과 CSR 타이밍 이슈로 실패했습니다.
 
 #### 1. FiberNode는 Puppeteer로 접근할 수 없습니다.
 
@@ -274,7 +291,7 @@ Next.js, Vite 등 클라이언트 사이드 렌더링(CSR) 기반 앱은 렌더�
 하지만 Puppeteer는 페이지가 완전히 렌더링되었는지 판단하지 못한 채 DOM을 수집하는 경우가 많아
 아직 Fiber 구조가 생성되지 않은 상태에서 잘못된 시점의 데이터를 수집하거나 아예 상태 추적에 실패하곤 했습니다.
 
-### 3.2 외부 API 요청에는 CORS 문제가 있습니다.
+### 3.2 외부 API 전송은 CORS 보안 정책에 막혔습니다.
 
 SnapBug는 상태를 추적한 뒤 이를 API 서버로 전송해야 합니다.
 하지만 웹 보안 정책인 CORS(Cross-Origin Resource Sharing) 때문에 문제가 발생했습니다.
@@ -285,7 +302,7 @@ SnapBug는 상태를 추적한 뒤 이를 API 서버로 전송해야 합니다.
 
 브라우저 보안 정책 상 다른 도메인으로 직접 fetch를 시도하면 기본적으로 차단되며 특히 Chrome 확장 프로그램이나 iframe 내 실행 환경에서는 스크립트 삽입만으로도 API 요청이 차단되거나 정상적으로 작동하지 않는 문제가 반복되었습니다.
 
-### 3.3 그래서 CDN + NPM 병행 구조를 선택했습니다.
+### 3.3 브라우저에서 직접 실행 가능한 CDN + NPM 병행 구조를 선택했습니다.
 
 SnapBug는 서버가 아닌 브라우저 내부에서 직접 실행되는 방식을 선택했습니다.
 이 구조 덕분에 React 앱과 **같은 환경(origin)**에서 상태를 추적하고 서버에 전송할 수 있어
@@ -320,7 +337,7 @@ npm install snapbug
 
 <br>
 
-## 4. 명령어 하나로 디버깅 화면을 자동 배포할 수 있을까?
+## 4. 명령어 한 줄로 상태 기반 디버깅 UI를 빌드하고 배포합니다.
 
 디버깅 과정을 가능한 간단하고 직관적으로 만들고 싶었습니다.
 
@@ -376,7 +393,7 @@ npx snapbug run
 
 # Trouble Shooting
 
-## 1. React 내부 상태의 순환 참조로 인한 상태 전송 실패를 안전한 상태 필터링으로 해결
+## 1. React 상태를 JSON으로 안전하게 저장하기 위해 순환 참조를 제거했습니다.
 
 React 상태를 JSON으로 변환하는 과정에서 순환 참조 에러가 발생했습니다.<br>
 SnapBug는 `memoizedState`를 순회하며 상태를 기록합니다. 하지만 `memoizedState`에는 React가 내부적으로 사용하는 참조 구조가 포함되어 있어
@@ -386,20 +403,20 @@ SnapBug는 `memoizedState`를 순회하며 상태를 기록합니다. 하지만 
 TypeError: Converting circular structure to JSON
 ```
 
-### 원인 : React 상태 구조는 내부적으로 순환 참조를 포함하고 있다.
+### 원인 : React 상태를 저장하려 했지만 순환 참조 때문에 직렬화 오류가 발생했습니다.
 
 React는 상태 업데이트와 렌더링 최적화를 위해 내부적으로 다음과 같은 값들을 memoizedState에 저장합니다.
 
 <img src="https://i.ibb.co/LzLnzy03/image.png" alt="image" border="0">
 
-- `queue`, `deps`, `baseQueue` : 상태 업데이트 대기열과 의존성 정보
+- `queue`, `deps`, `baseQueue` : 상태 업데이트를 위한 참조 대기열
 - `_owner`, `_store`, `_source` : 컴포넌트 트리와 연결된 내부 참조
 - `destroy`, `create` : useEffect에서 사용되는 클린업 및 생성 함수
 
 이런 값들이 서로 연결되어 있어 순환 구조를 이루며 직렬화할 수 없는 DOM 객체나 함수까지 포함되어 있는 경우가 많았습니다.<br>
 이로 인해 상태만 기록하려 해도 React 내부 구조까지 함께 포함되어 버리는 문제가 발생했습니다.
 
-### 해결 : 순환 참조를 막는 안전한 상태 필터링을 하자.
+### 해결 : 상태 저장 오류를 막기 위해 내부 참조 속성을 필터링했습니다.
 
 #### 내부에서 사용되는 구조적 속성은 JSON 변환 대상에서 제외했습니다.
 
@@ -426,11 +443,11 @@ const invalidKeys = [
 그 덕분에 이제는 실제로 화면에 영향을 주는 상태 값들만 안전하게 저장할 수 있게 되었고,
 저장할 때 오류 없이 그리고 나중에 비교할 때도 정확한 상태 변화만 확인할 수 있게 되었습니다.
 
-## 2. Fiber 트리를 제대로 순회하지 않아 일부 상태가 누락되던 문제
+## 2. React 모든 상태를 빠짐없이 수집하려면 Fiber 트리를 전체 순회해야 했습니다.
 
-React 상태가 일부만 수집되는 문제가 발생했습니다. 일부 컴포넌트의 상태는 정상적으로 기록되지만, 다른 컴포넌트의 상태가 누락되거나 아예 수집되지 않는 현상이 있었습니다.
+React 상태를 수집하는 과정에서 일부 컴포넌트의 상태가 누락되는 문제를 겪었습니다. 문제는 Fiber 트리를 부분적으로만 순회했기 때문이었고 이를 해결하기 위해 전체 트리를 누락 없이 순회하는 방식으로 개선했습니다.
 
-### 원인 : Fiber 트리를 자식 노드만 따라가서 형제 노드는 누락됨
+### 원인 : 형제 노드를 탐색하지 않아 일부 상태가 누락되었습니다.
 
 초기 구현에서는 다음처럼 `fiberNode.child` 만 따라 내려가는 방식으로 상태를 수집했습니다.
 
@@ -447,7 +464,7 @@ while (fiberNode) {
 
 이 구조는 각 컴포넌트의 첫 번째 자식만 탐색하게 됩니다. 형제 컴포넌트는 무시되기 때문에 전체 트리를 제대로 순회하지 못하고 상태 누락 문제가 발생했습니다.
 
-### 해결 : 전체 트리를 누락 없이 순회하도록 DFS 방식으로 변경
+### 해결 : React 트리 전체를 순회하도록 DFS 구조로 개선했습니다.
 
 React Fiber 트리는 실제로 트리 구조를 갖고 있으며 각 노드는 다음과 같은 관계를 가집니다.
 
@@ -474,26 +491,29 @@ if (fiberNode.child) {
 }
 ```
 
-### 결과 : 컴포넌트의 상태가 빠짐없이 전부 수집됨
+이제는 자식이 없을 경우 부모로 올라가 형제 노드를 찾는 방식으로 모든 컴포넌트를 탐색할 수 있었습니다.
+
+### 결과 : 누락 없이 React 전체 상태를 기록할 수 있게 됐습니다.
 
 React DevTools 역시 동일한 순회 구조를 사용하며 실제로 이 방식을 참고해 구현을 개선했습니다.<br>
-이제 React 앱의 모든 컴포넌트를 빠짐없이 순회하면서 memoizedState를 기록할 수 있었습니다.
+이제 React 앱의 모든 컴포넌트를 빠짐없이 순회하면서 `memoizedState`를 기록할 수 있었습니다.
 
-## 3. 변화가 없는데도 계속 저장된다.
+## 3. DOM이 바뀐 시점에만 저장되도록 최적화했습니다.
 
-SnapBug는 상태 변화와 UI 상태를 시점별로 기록합니다. 초기 구현에서는 시간 흐름에 따라 발생하는 모든 상태 변화마다 React 상태뿐 아니라 DOM과 CSS까지 함께 .json 파일에 저장하도록 설계했습니다. 이 방식은 구현이 단순하고 복원에 유리했지만 비효율적이었습니다.
+SnapBug는 상태 변화가 발생할 때마다 React 상태뿐만 아니라 해당 시점의 DOM과 스타일도 함께 기록합니다. 하지만 초기 구현에서는 화면에 변화가 없더라도 매번 DOM과 스타일을 저장해 동일한 데이터가 계속 중복 저장되어 비효율적이었습니다.
 
-### 문제: DOM이 변하지 않았는데도 매번 전체 DOM과 스타일이 저장됨
+### 문제: 화면이 바뀌지 않아도 DOM과 스타일을 반복 저장하고 있었습니다.
 
-많은 경우 사용자 인터랙션이나 상태 변경이 UI 구조를 바꾸지 않음에도, SnapBug는 매 시점마다 동일한 DOM과 스타일을 중복 저장했습니다. 이렇게 되면 다음과 같은 문제가 발생합니다.
+실제 사용자 인터랙션에서는 상태만 바뀌고 화면에는 변화가 없는 경우도 자주 발생합니다.
+하지만 이전 구조는 DOM이 변하지 않았더라도 상태가 바뀌기만 하면 매번 DOM 전체를 다시 저장했습니다. 이로 인해 다음과 같은 문제가 발생했습니다.
 
 - 수백 개의 snapshot을 기록할수록 JSON 파일 크기가 빠르게 커지고, 로딩 성능에 영향을 줍니다.
 - 시각적으로는 아무 변화도 없는데 렌더링할 데이터가 계속 누적되면서 클라이언트 렌더링도 느려집니다.
 - 실제 UI 변화 시점을 정확히 구분하기 어려워 타임라인 시각화에도 불필요한 복잡성이 생깁니다.
+  
+결국 화면이 그대로인 경우에도 DOM과 스타일을 반복 저장하면서 성능 저하와 데이터 낭비가 발생한 것입니다.
 
-이러한 문제는 단순히 상태가 바뀌었다는 이유만으로 같은 DOM을 반복 저장했기 때문에 발생했습니다.
-
-### 해결 : DOM의 해시값을 비교해 변화가 있는 시점에만 저장하는 구조로 전환
+### 해결 : DOM 해시값을 비교해 실제 변화가 있는 시점에만 저장하도록 개선했습니다.
 
 이 문제를 해결하기 위해 DOM 문자열을 SHA-256 해시값으로 변환한 뒤 이전 시점과 비교하여 DOM이 변경되었을 때만 실제 DOM과 스타일을 저장하도록 개선했습니다.
 
@@ -519,7 +539,7 @@ const getDOMHash = () => {
   }
   ```
 
-- DOM이 변경되지 않은 경우
+- DOM이 동일한 경우
   ```js
   {
     "timestamp": "2025-05-03T13:12:05Z",
@@ -527,10 +547,10 @@ const getDOMHash = () => {
   }
   ```
 
-### 결과 : 화면에 실질적인 변화가 감지된 시점만 기록하는 구조로 최적화
+### 결과 : 불필요한 중복 저장 없이 필요한 시점만 기록되도록 최적화되었습니다.
 
-SnapBug는 이 로직을 실제로 다음과 같이 구현하고 있습니다. `detectStateChange` 함수에서 상태 변경이 감지되면 DOM 문자열을 추출하고, 이를 `getDOMHash()`로 해시화한 뒤 이전 해시값과 비교합니다. <br>
-만약 DOM이 변경된 경우에만 dom과 styles 값을 함께 서버로 전송합니다. 이 구조는 중복 저장을 방지하고 UI 시점 복원에 필요한 최소 정보만 기록하는 방식으로 구성되어 있습니다.
+SnapBug는 이 로직을 `detectStateChange` 내부에 적용하여 상태가 바뀌었을 때만 DOM 해시값을 계산하고 이전 값과 비교합니다.
+만약 DOM이 변경된 경우에만 DOM과 CSS 데이터를 함께 서버로 전송합니다. 그 결과, UI 시점 복원에 필요한 핵심 정보만을 기록하면서도 저장 용량은 최소화할 수 있게 되었습니다.
 
 <br>
 
